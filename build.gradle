@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2018. OpenLattice, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * You can contact the owner of the copyright at support@openlattice.com
+ *
+ */
+
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'signing'
+    id 'org.jetbrains.kotlin.jvm' version '2.3.10'
+}
+
+dependencyLocking {
+    lockAllConfigurations()
+}
+
+description = "Chronicle Data Models (GPL) - shared data classes for Android app and server"
+group = "com.methodic"
+ext.projectName = 'chronicle-models'
+
+if(!project.hasProperty('developmentMode')) {
+    ext.developmentMode = false
+}
+
+println projectName + " with developmentMode = " + project.developmentMode
+
+if( project.hasProperty('developmentMode') && project.developmentMode ) {
+    apply from: "../gradles/methodic.gradle"
+} else {
+    apply from: "https://raw.githubusercontent.com/methodic-labs/methodic/main/gradles/methodic.gradle"
+}
+
+// Java 17 target for Android compatibility
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+kotlin {
+    explicitApi()
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs += '-jvm-default=no-compatibility'
+    }
+    if (name == 'compileKotlin') {
+        kotlinOptions.allWarningsAsErrors = true
+    }
+}
+
+ext.jackson_version = '2.21.1'
+
+dependencies {
+    implementation "com.fasterxml.jackson.core:jackson-core:${jackson_version}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jackson_version}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:${jackson_version}"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}"
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-guava:${jackson_version}") {
+        exclude module: 'guava'
+    }
+
+    implementation 'com.google.guava:guava:32.0.1-android'
+
+    // Jakarta Validation for @NotBlank, @Size, etc. annotations on data classes
+    implementation "jakarta.validation:jakarta.validation-api:${jakarta_validation_api_version}"
+
+    implementation "org.apache.commons:commons-lang3:${commonsLang_version}"
+    implementation "commons-io:commons-io:${commonsio_version}"
+    implementation "com.squareup.retrofit2:retrofit:${retrofit2_version}"
+    implementation "org.slf4j:slf4j-api:${slf4j_version}"
+}
