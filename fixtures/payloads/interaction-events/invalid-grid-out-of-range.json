@@ -1,0 +1,12 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000041",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "eventType" : "CLICK",
+  "gridRows" : 4,
+  "gridCols" : 3,
+  "gridRow" : 7,
+  "gridCol" : 1,
+  "elementRole" : "android.widget.Button",
+  "foregroundPackage" : "com.example.fixture"
+} ]

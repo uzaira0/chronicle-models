@@ -1,0 +1,332 @@
+{
+  "schemaVersion": "chronicle-fixture-registry/v1",
+  "families": [
+    {
+      "family": "android-sensor-data",
+      "collectionModuleId": null,
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.android.AndroidSensorSample",
+      "fixtureFiles": [
+        "fixtures/payloads/android-sensor-data/valid.json",
+        "fixtures/payloads/android-sensor-data/invalid-bad-uuid.json",
+        "fixtures/payloads/android-sensor-data/invalid-bad-date.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset (2026-07-01T12:00:00Z); timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "AndroidSensorDataUploadService",
+      "backendTable": "android_sensor_data",
+      "notes": "Spans every active sensor_* hardware module; the per-sample sensor field selects the module, so collectionModuleId is null here."
+    },
+    {
+      "family": "ios-sensorkit-data",
+      "collectionModuleId": null,
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.sensorkit.SensorDataSample",
+      "fixtureFiles": [
+        "fixtures/payloads/ios-sensorkit-data/valid.json",
+        "fixtures/payloads/ios-sensorkit-data/invalid-missing-sensor.json"
+      ],
+      "timeSemantics": "dateRecorded/startDate/endDate: OffsetDateTime, ISO-8601 with offset; duration is seconds as a double",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "SensorDataUploadService",
+      "backendTable": "sensor_data",
+      "notes": "iOS SensorKit stream; CollectionModuleId is Android-scoped so no module id applies. data and device are nested JSON strings."
+    },
+    {
+      "family": "screen-time-usage",
+      "collectionModuleId": null,
+      "payloadSchemaVersion": 1,
+      "jvmClass": null,
+      "fixtureFiles": [
+        "fixtures/payloads/screen-time-usage/valid.json"
+      ],
+      "timeSemantics": "generatedAt/capturedAt/observationStart/observationEnd: ISO-8601 UTC, second precision (Swift JSONEncoder .iso8601); Swift encoder sorts keys and omits nil fields",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "deviceId"
+      ],
+      "backendHandler": "ScreenTimeUsageUploadService",
+      "backendTable": "sensor_data",
+      "notes": "Envelope DTO lives in chronicle-server (ScreenTimeUsageEnvelope, StudyV4Controller); the wire shape is produced by chronicle-ios ScreenTimeUsagePayload.swift and ingests as deviceUsage SensorDataSamples."
+    },
+    {
+      "family": "user-identification",
+      "collectionModuleId": "user_identification",
+      "payloadSchemaVersion": 1,
+      "jvmClass": null,
+      "fixtureFiles": [
+        "fixtures/payloads/user-identification/valid.json",
+        "fixtures/payloads/user-identification/invalid-missing-choice.json"
+      ],
+      "timeSemantics": "generatedAt/capturedAt: ISO-8601 UTC with offsets accepted; Swift JSONEncoder emits second-precision UTC",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "deviceId"
+      ],
+      "backendHandler": "UserIdentificationUploadService",
+      "backendTable": "sensor_data",
+      "notes": "Envelope DTO lives in chronicle-server and is generated for iOS from chronicle-api; records ingest as deviceUsage SensorDataSamples."
+    },
+    {
+      "family": "device-settings",
+      "collectionModuleId": "device_settings",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidDeviceSettingsEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/device-settings/valid.json",
+        "fixtures/payloads/device-settings/invalid-negative-volume.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "DeviceSettingsUploadService",
+      "backendTable": "device_settings"
+    },
+    {
+      "family": "battery-telemetry",
+      "collectionModuleId": "battery_telemetry",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.BatterySample",
+      "fixtureFiles": [
+        "fixtures/payloads/battery-telemetry/valid.json",
+        "fixtures/payloads/battery-telemetry/invalid-level-out-of-range.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "BatteryTelemetryUploadService",
+      "backendTable": "battery_telemetry"
+    },
+    {
+      "family": "interaction-events",
+      "collectionModuleId": "interaction_events",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidInteractionEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/interaction-events/valid.json",
+        "fixtures/payloads/interaction-events/invalid-grid-out-of-range.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; eventTimeMillis is the SystemClock event time in millis when present",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "InteractionEventsUploadService",
+      "backendTable": "interaction_events"
+    },
+    {
+      "family": "ambient-audio",
+      "collectionModuleId": "ambient_audio",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AmbientAudioClassificationEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/ambient-audio/valid.json",
+        "fixtures/payloads/ambient-audio/invalid-confidence-out-of-range.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset (window end); windowStartMillis/windowEndMillis bound the listen window; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "AmbientAudioUploadService",
+      "backendTable": "ambient_audio_events"
+    },
+    {
+      "family": "app-audio-activity",
+      "collectionModuleId": "audio_activity",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidAudioActivityEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/app-audio-activity/valid.json",
+        "fixtures/payloads/app-audio-activity/invalid-negative-volume.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "AppAudioActivityUploadService",
+      "backendTable": "app_audio_activity"
+    },
+    {
+      "family": "app-audio-content",
+      "collectionModuleId": "audio_content",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidAudioContentEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/app-audio-content/valid.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; durationMillis/positionMillis are media-position millis",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "AppAudioContentUploadService",
+      "backendTable": "app_audio_content"
+    },
+    {
+      "family": "notification-activity",
+      "collectionModuleId": "notification_activity",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidNotificationActivityEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/notification-activity/valid.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "NotificationActivityUploadService",
+      "backendTable": "notification_activity"
+    },
+    {
+      "family": "sleep-events",
+      "collectionModuleId": "sleep",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidSleepEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/sleep-events/valid.json",
+        "fixtures/payloads/sleep-events/invalid-confidence-out-of-range.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; segmentStartMillis/segmentEndMillis are epoch millis",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "SleepEventsUploadService",
+      "backendTable": "sleep_events"
+    },
+    {
+      "family": "activity-recognition",
+      "collectionModuleId": "activity_recognition",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidActivityRecognitionEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/activity-recognition/valid.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "ActivityRecognitionEventsUploadService",
+      "backendTable": "activity_recognition_events"
+    },
+    {
+      "family": "health-metrics",
+      "collectionModuleId": "health_connect",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidHealthMetricEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/health-metrics/valid.json",
+        "fixtures/payloads/health-metrics/invalid-window-inverted.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; startMillis/endMillis are the epoch-millis record window (equal for instantaneous readings)",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "HealthMetricsUploadService",
+      "backendTable": "health_metrics"
+    },
+    {
+      "family": "connectivity-state",
+      "collectionModuleId": "connectivity_state",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidConnectivityStateEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/connectivity-state/valid.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; timezone carries the device-local zone id",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "ConnectivityStateEventsUploadService",
+      "backendTable": "connectivity_state_events"
+    },
+    {
+      "family": "app-network-usage",
+      "collectionModuleId": "app_network_usage",
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.collection.AndroidAppNetworkUsageEvent",
+      "fixtureFiles": [
+        "fixtures/payloads/app-network-usage/valid.json",
+        "fixtures/payloads/app-network-usage/invalid-negative-rx.json"
+      ],
+      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset; bucketStartMillis/bucketEndMillis are the NetworkStatsManager epoch-millis bucket window",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "sourceDeviceId"
+      ],
+      "backendHandler": "AppNetworkUsageUploadService",
+      "backendTable": "app_network_usage"
+    },
+    {
+      "family": "encrypted-payloads",
+      "collectionModuleId": null,
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.crypto.EncryptedEnvelope",
+      "fixtureFiles": [
+        "fixtures/payloads/encrypted-payloads/valid.json",
+        "fixtures/payloads/encrypted-payloads/invalid-blank-key-id.json",
+        "fixtures/payloads/encrypted-payloads/invalid-unknown-payload-type.json"
+      ],
+      "timeSemantics": "no event time on the envelope; the sealed plaintext batch carries per-sample timestamps and the backend stamps ingest time",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "payloadType"
+      ],
+      "backendHandler": "EncryptedPayloadUploadService",
+      "backendTable": "encrypted_payloads",
+      "notes": "payloadType routes the blind ciphertext; studyId/participantId are AAD-bound from the request path, never carried in the envelope."
+    },
+    {
+      "family": "ios-device",
+      "collectionModuleId": null,
+      "payloadSchemaVersion": 1,
+      "jvmClass": "com.openlattice.chronicle.sources.IOSDevice",
+      "fixtureFiles": [
+        "fixtures/payloads/ios-device/valid.json",
+        "fixtures/payloads/ios-device/invalid-missing-class.json"
+      ],
+      "timeSemantics": "no event time; enrollment-time source-device record",
+      "scopingFields": [
+        "studyId",
+        "participantId",
+        "deviceId"
+      ],
+      "backendHandler": "EnrollmentService",
+      "backendTable": "DEVICES",
+      "notes": "Polymorphic SourceDevice: the wire payload must carry the Jackson @class discriminator com.openlattice.chronicle.sources.IOSDevice."
+    }
+  ]
+}

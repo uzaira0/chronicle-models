@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "deviceId": "00000000-0000-4000-8000-0000000000d2",
+  "studyId": "00000000-0000-4000-8000-00000000005e",
+  "participantId": "fixture-participant-2",
+  "generatedAt": "2026-07-01T12:00:00Z",
+  "records": [
+    {
+      "id": "00000000-0000-4000-8000-000000000201",
+      "capturedAt": "2026-07-01T12:00:00Z",
+      "timezoneIdentifier": "UTC",
+      "trigger": "screenTimeThreshold",
+      "choice": "participant",
+      "promptId": "00000000-0000-4000-8000-000000000202",
+      "sourceLabel": "fixture-threshold"
+    }
+  ]
+}

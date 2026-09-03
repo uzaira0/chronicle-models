@@ -1,0 +1,10 @@
+{
+  "version" : 2,
+  "alg" : "RSA-OAEP-256+MLKEM1024+A256GCM",
+  "keyId" : "study-key-00000000-0000-4000-8000-0000000000e1",
+  "payloadType" : "battery",
+  "encryptedKey" : "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4v",
+  "iv" : "AAECAwQFBgcICQoL",
+  "ciphertext" : "AAMGCQwPEhUYGx4hJCcqLTAzNjk8P0JFSEtOUVRXWl1gY2ZpbG9ydXh7foGEh4qNkJOWmZyfoqWoq66xtLe6vQ==",
+  "sampleCount" : 2
+}

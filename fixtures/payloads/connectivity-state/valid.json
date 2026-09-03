@@ -1,0 +1,19 @@
+[ {
+  "id" : "00000000-0000-4000-8000-0000000000b1",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "eventType" : "AVAILABLE",
+  "transport" : "WIFI",
+  "connected" : true,
+  "metered" : false,
+  "validated" : true
+}, {
+  "id" : "00000000-0000-4000-8000-0000000000b2",
+  "timestamp" : "2026-07-01T12:01:00Z",
+  "timezone" : "UTC",
+  "eventType" : "LOST",
+  "transport" : "NONE",
+  "connected" : false,
+  "metered" : null,
+  "validated" : null
+} ]

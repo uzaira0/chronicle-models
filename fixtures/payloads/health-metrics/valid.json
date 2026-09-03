@@ -1,0 +1,21 @@
+[ {
+  "id" : "00000000-0000-4000-8000-0000000000a1",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "metricType" : "STEPS",
+  "value" : 1234.0,
+  "unit" : "count",
+  "startMillis" : 1782990000000,
+  "endMillis" : 1782993600000,
+  "sourcePackage" : "com.example.fitness"
+}, {
+  "id" : "00000000-0000-4000-8000-0000000000a2",
+  "timestamp" : "2026-07-01T12:01:00Z",
+  "timezone" : "UTC",
+  "metricType" : "HEART_RATE",
+  "value" : 64.0,
+  "unit" : "bpm",
+  "startMillis" : 1782993600000,
+  "endMillis" : 1782993600000,
+  "sourcePackage" : null
+} ]

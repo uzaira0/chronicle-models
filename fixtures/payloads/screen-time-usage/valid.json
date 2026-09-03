@@ -1,0 +1,33 @@
+{
+  "deviceId" : "00000000-0000-4000-8000-0000000000d1",
+  "generatedAt" : "2026-07-01T12:00:00Z",
+  "participantId" : "fixture-participant-1",
+  "records" : [ {
+    "appName" : "Fixture App",
+    "bundleIdentifier" : "com.example.fixture",
+    "capturedAt" : "2026-07-01T12:00:00Z",
+    "confidence" : "appleDeviceActivity",
+    "durationSeconds" : 900,
+    "id" : "00000000-0000-4000-8000-000000000101",
+    "notificationCount" : 3,
+    "observationEnd" : "2026-07-01T12:00:00Z",
+    "observationStart" : "2026-07-01T11:00:00Z",
+    "pickupCount" : 5,
+    "rowKind" : "application",
+    "source" : "deviceActivityExport",
+    "timezoneIdentifier" : "UTC"
+  }, {
+    "capturedAt" : "2026-07-01T12:00:00Z",
+    "confidence" : "exactParticipantSubmitted",
+    "durationSeconds" : 300,
+    "id" : "00000000-0000-4000-8000-000000000102",
+    "observationEnd" : "2026-07-01T12:00:00Z",
+    "observationStart" : "2026-07-01T11:00:00Z",
+    "rowKind" : "webDomain",
+    "source" : "reportSummary",
+    "timezoneIdentifier" : "UTC",
+    "webDomain" : "example.org"
+  } ],
+  "schemaVersion" : 1,
+  "studyId" : "00000000-0000-4000-8000-00000000005d"
+}

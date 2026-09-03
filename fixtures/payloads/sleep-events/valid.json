@@ -1,0 +1,23 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000081",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "eventType" : "SEGMENT",
+  "segmentStartMillis" : 1782900000000,
+  "segmentEndMillis" : 1782928800000,
+  "segmentStatus" : "SUCCESSFUL",
+  "confidence" : null,
+  "light" : null,
+  "motion" : null
+}, {
+  "id" : "00000000-0000-4000-8000-000000000082",
+  "timestamp" : "2026-07-01T12:01:00Z",
+  "timezone" : "UTC",
+  "eventType" : "CLASSIFY",
+  "segmentStartMillis" : null,
+  "segmentEndMillis" : null,
+  "segmentStatus" : null,
+  "confidence" : 87,
+  "light" : 2,
+  "motion" : 0
+} ]

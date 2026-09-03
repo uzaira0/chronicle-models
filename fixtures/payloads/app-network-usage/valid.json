@@ -1,0 +1,11 @@
+[ {
+  "id" : "00000000-0000-4000-8000-0000000000c1",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "packageName" : "com.example.video",
+  "networkType" : "CELLULAR",
+  "rxBytes" : 41943040,
+  "txBytes" : 524288,
+  "bucketStartMillis" : 1782990000000,
+  "bucketEndMillis" : 1782993600000
+} ]

@@ -1,0 +1,33 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000051",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "eventType" : "MEDIA_SESSION_CHANGE",
+  "audioActive" : true,
+  "audioPackage" : "com.example.music",
+  "contentType" : "MUSIC",
+  "playbackState" : "PLAYING",
+  "outputRoute" : "BLUETOOTH",
+  "routeConnected" : null,
+  "mediaVolume" : 9,
+  "maxMediaVolume" : 15,
+  "ringerMode" : "NORMAL",
+  "dndActive" : false,
+  "callActive" : false
+}, {
+  "id" : "00000000-0000-4000-8000-000000000052",
+  "timestamp" : "2026-07-01T12:01:00Z",
+  "timezone" : "UTC",
+  "eventType" : "ROUTE_CHANGE",
+  "audioActive" : false,
+  "audioPackage" : null,
+  "contentType" : null,
+  "playbackState" : null,
+  "outputRoute" : "WIRED_HEADPHONES",
+  "routeConnected" : false,
+  "mediaVolume" : 0,
+  "maxMediaVolume" : 15,
+  "ringerMode" : "VIBRATE",
+  "dndActive" : null,
+  "callActive" : null
+} ]

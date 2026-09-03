@@ -1,0 +1,11 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000003",
+  "dateRecorded" : "2026-07-01T12:00:00Z",
+  "duration" : 3600.0,
+  "data" : "{\"totalScreenWakes\":12,\"totalUnlocks\":9,\"totalUnlockDuration\":5400.0,\"appUsage\":{\"productivity\":[{\"usageTime\":900.0,\"textInputSessions\":{\"en-US\":120.0},\"bundleIdentifier\":\"com.example.fixture\"}]},\"webUsage\":{\"example.org\":300.0}}",
+  "device" : "{\"model\":\"iPhone14,2\",\"name\":\"Chronicle Fixture iPhone\",\"systemName\":\"iOS\",\"systemVersion\":\"17.5\"}",
+  "timezone" : "UTC",
+  "sensor" : "deviceUsage",
+  "startDate" : "2026-07-01T11:00:00Z",
+  "endDate" : "2026-07-01T12:00:00Z"
+} ]

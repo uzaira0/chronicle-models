@@ -1,0 +1,7 @@
+[ {
+  "id" : "not-a-uuid",
+  "sensor" : "accelerometer",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "values" : [ 0.12, -0.34, 9.81 ]
+} ]

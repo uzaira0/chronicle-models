@@ -1,0 +1,116 @@
+/*
+ * Copyright (C) 2018. OpenLattice, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * You can contact the owner of the copyright at support@openlattice.com
+ *
+ */
+
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'signing'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+// dependencyLocking, java 21 source/target, and the shared KotlinCompile options
+// (jvmTarget 21, -jvm-default=no-compatibility) come from gradles/chronicle.gradle.
+
+description = "Chronicle Data Models (GPL) - shared data classes for Android app and server"
+group = "com.openlattice"
+ext.projectName = 'chronicle-models'
+
+if(!project.hasProperty('developmentMode')) {
+    ext.developmentMode = false
+}
+
+println projectName + " with developmentMode = " + project.developmentMode
+
+// Shared build config is always applied from the local checkout — no remote
+// fetch: a raw.githubusercontent apply is unverifiable remote code execution
+// and silently pins the build to whatever `main` holds at fetch time.
+def localChronicleGradle = file("../gradles/chronicle.gradle")
+if (!localChronicleGradle.exists()) {
+    localChronicleGradle = file("../methodic/gradles/chronicle.gradle")
+}
+if (!localChronicleGradle.exists()) {
+    throw new GradleException(
+        "Missing local Chronicle Gradle script: expected ../gradles/chronicle.gradle " +
+        "(or ../methodic/gradles/chronicle.gradle). Clone chronicle-models inside the " +
+        "methodic monorepo checkout."
+    )
+}
+apply from: localChronicleGradle
+
+kotlin {
+    explicitApi()
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    if (name == 'compileKotlin') {
+        kotlinOptions.allWarningsAsErrors = true
+    }
+}
+
+// Payload fixture tests (docs/shared-contracts Tranche 3) load canonical fixture
+// files from the repo `fixtures/` directory. Expose the repo root so the tests do
+// not depend on the Gradle working directory; the test helper also falls back to
+// walking up from user.dir when the property is absent (e.g. IDE runs).
+tasks.withType(Test).configureEach {
+    systemProperty 'chronicle.models.root', projectDir.absolutePath
+}
+
+dependencies {
+    implementation "com.fasterxml.jackson.core:jackson-core:${jackson_version}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jackson_version}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jackson_version}"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}"
+    implementation ("com.fasterxml.jackson.datatype:jackson-datatype-guava:${jackson_version}") {
+        exclude module: 'guava'
+    }
+
+    implementation "com.google.guava:guava:${guava_android_version}"
+
+    // BouncyCastle: ML-KEM (FIPS 203) for the post-quantum half of the hybrid envelope
+    // key-wrap (HIPAA-2028 W2). JDK 21 and Android JCA ship no PQC, so the shared crypto
+    // needs a provider; BC's low-level org.bouncycastle.pqc.crypto.mlkem API runs identically
+    // on the Android collector and the backend (the seal/open parity guarantee). `api` so the
+    // Android app, which consumes chronicle-models, gets it transitively. Version pinned by
+    // the central force block in gradles/chronicle.gradle.
+    api "org.bouncycastle:bcprov-jdk18on:${bouncycastle_version}"
+
+    // Jakarta Validation for @NotBlank, @Size, etc. annotations on data classes
+    implementation "jakarta.validation:jakarta.validation-api:${jakarta_validation_api_version}"
+
+    implementation "org.apache.commons:commons-lang3:${commonsLang_version}"
+    implementation "commons-io:commons-io:${commonsio_version}"
+    implementation "com.squareup.retrofit2:retrofit:${retrofit2_version}"
+    implementation "org.slf4j:slf4j-api:${slf4j_version}"
+
+    /*
+     * TESTING
+     * JUnit 4 to match the chronicle-api model test convention. The Smile dataformat
+     * exercises the binary wire path used for upload payloads.
+     */
+    testImplementation "junit:junit:${junit_version}"
+    testImplementation "com.fasterxml.jackson.dataformat:jackson-dataformat-smile:${jackson_version}"
+    testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jackson_version}"
+    testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin:${jackson_version}"
+    testImplementation ("com.fasterxml.jackson.datatype:jackson-datatype-guava:${jackson_version}") {
+        exclude module: 'guava'
+    }
+}

@@ -1,0 +1,23 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000001",
+  "sensor" : "accelerometer",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "x" : 0.12,
+  "y" : -0.34,
+  "z" : 9.81,
+  "w" : null,
+  "accuracy" : 3,
+  "values" : [ 0.12, -0.34, 9.81 ]
+}, {
+  "id" : "00000000-0000-4000-8000-000000000002",
+  "sensor" : "light",
+  "timestamp" : "2026-07-01T12:01:00Z",
+  "timezone" : "UTC",
+  "x" : null,
+  "y" : null,
+  "z" : null,
+  "w" : null,
+  "accuracy" : 2,
+  "values" : [ 320.0 ]
+} ]

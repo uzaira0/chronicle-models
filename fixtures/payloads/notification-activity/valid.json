@@ -1,0 +1,19 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000071",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "eventType" : "POSTED",
+  "packageName" : "com.example.messenger",
+  "category" : "msg",
+  "ongoing" : false,
+  "importance" : 3
+}, {
+  "id" : "00000000-0000-4000-8000-000000000072",
+  "timestamp" : "2026-07-01T12:01:00Z",
+  "timezone" : "UTC",
+  "eventType" : "REMOVED",
+  "packageName" : "com.example.mail",
+  "category" : null,
+  "ongoing" : null,
+  "importance" : null
+} ]

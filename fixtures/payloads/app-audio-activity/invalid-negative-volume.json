@@ -1,0 +1,9 @@
+[ {
+  "id" : "00000000-0000-4000-8000-000000000051",
+  "timestamp" : "2026-07-01T12:00:00Z",
+  "timezone" : "UTC",
+  "eventType" : "VOLUME_CHANGE",
+  "audioActive" : true,
+  "mediaVolume" : -3,
+  "maxMediaVolume" : 15
+} ]
