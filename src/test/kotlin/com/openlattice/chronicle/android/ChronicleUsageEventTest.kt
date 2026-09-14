@@ -14,6 +14,14 @@ class ChronicleUsageEventTest {
     }
 
     @Test
+    fun hiddenNotificationEventTypesRoundTripThroughTheirLabels() {
+        assertEquals(10, fromInteractionType("Notification Seen"))
+        assertEquals(12, fromInteractionType("Notification Interruption"))
+        // Rows uploaded by clients before the labels existed keep their numeric type.
+        assertEquals(10, fromInteractionType("Unknown importance: 10"))
+    }
+
+    @Test
     fun temporaryCapitalizationRemainsReadableForExistingRows() {
         assertEquals(
             ChronicleUsageEventType.SCREEN_NON_INTERACTIVE.value,

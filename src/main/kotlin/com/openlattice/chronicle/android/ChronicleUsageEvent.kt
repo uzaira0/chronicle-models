@@ -49,6 +49,8 @@ public fun fromInteractionType(interactionType: String): Int {
         "Foreground Service Stop" -> ChronicleUsageEventType.FOREGROUND_SERVICE_STOP.value
         "Keyguard Shown" -> ChronicleUsageEventType.KEYGUARD_SHOWN.value
         "Keyguard Hidden" -> ChronicleUsageEventType.KEYGUARD_HIDDEN.value
+        "Notification Seen" -> ChronicleUsageEventType.NOTIFICATION_SEEN.value
+        "Notification Interruption" -> ChronicleUsageEventType.NOTIFICATION_INTERRUPTION.value
         "Move to Background" -> ChronicleUsageEventType.MOVE_TO_BACKGROUND.value
         "Move to Foreground" -> ChronicleUsageEventType.MOVE_TO_FOREGROUND.value
         "None" -> ChronicleUsageEventType.NONE.value

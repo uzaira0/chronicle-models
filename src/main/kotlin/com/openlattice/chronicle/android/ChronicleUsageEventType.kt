@@ -22,6 +22,9 @@ public enum class  ChronicleUsageEventType ( public val  value: Int) {
     FOREGROUND_SERVICE_STOP(0x00000014),
     KEYGUARD_HIDDEN(0x00000012),
     ACTIVITY_STOPPED(0x00000017),
+    // Hidden platform event types; OEM builds (MIUI) still emit them through queryEvents.
+    NOTIFICATION_SEEN(0x0000000a),
+    NOTIFICATION_INTERRUPTION(0x0000000c),
     BATTERY_LOW(0x00010001),
     BATTERY_OKAY(0x00010002),
     BATTERY_CHARGING(0x00010003),
