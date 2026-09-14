@@ -35,7 +35,20 @@ public class ChronicleCallAdapterFactory : CallAdapter.Factory() {
                         logger.error(exMsg)
                         throw ChronicleCallException(exMsg, url, body, code)
                     }
-                    response.body()!!
+                    // A 204/205 (and any other empty-bodied success) yields a null body. That is the
+                    // correct outcome for the many Unit/Void operations; only a value-returning call
+                    // with no body is an error.
+                    response.body() ?: if (isVoid(returnType)) {
+                        Unit
+                    } else {
+                        val url = call.request().url.redactedForLogging()
+                        throw ChronicleCallException(
+                            "Call to $url returned code $code with an empty body but $returnType was expected",
+                            url,
+                            "",
+                            code
+                        )
+                    }
                 } catch (e: IOException) {
                     logger.error("Call to ${call.request().url.redactedForLogging()} failed due to exception.", e)
                     throw e
@@ -46,6 +59,9 @@ public class ChronicleCallAdapterFactory : CallAdapter.Factory() {
 
     public companion object {
         private val logger = LoggerFactory.getLogger(ChronicleCallAdapterFactory::class.java)
+
+        internal fun isVoid(type: Type): Boolean =
+            type == Unit::class.java || type == Void::class.java || type == Void.TYPE
 
         internal fun HttpUrl.redactedForLogging(): String {
             val defaultPort = when (scheme) {

@@ -42,7 +42,12 @@ public class ChronicleJacksonConverterFactory extends Factory {
             MediaType contentType = responseBody.contentType();
 
             if ( contentType == null ) {
-                return null;
+                // An empty body carries no content type; anything else is an unusable response
+                // and must not be silently converted into a null success value.
+                if ( responseBody.contentLength() == 0 ) {
+                    return null;
+                }
+                throw new IOException( "Response body has no content type and cannot be deserialized to " + type );
             }
 
             String rawContentType = contentType.toString();
@@ -51,14 +56,14 @@ public class ChronicleJacksonConverterFactory extends Factory {
                     return objectMapper.readValue( responseBody.byteStream(),
                             objectMapper.getTypeFactory().constructType( type ) );
                 } catch ( IOException e ) {
-                    logger.error( "Unable to read deserialize json response.", e );
-                    return null;
+                    logger.error( "Unable to deserialize json response to {}.", type, e );
+                    throw new IOException( "Unable to deserialize json response to " + type, e );
                 }
             } else if ( StringUtils.startsWith( rawContentType,
                     com.google.common.net.MediaType.PLAIN_TEXT_UTF_8.type() ) ) {
                 return IOUtils.toString( responseBody.byteStream(), Charsets.UTF_8 );
             }
-            return null;
+            throw new IOException( "Unsupported response content type " + rawContentType + " for " + type );
         };
     }
 
