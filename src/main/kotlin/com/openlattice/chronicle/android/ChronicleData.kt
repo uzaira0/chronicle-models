@@ -15,8 +15,9 @@ public class ChronicleData @JsonCreator(mode = JsonCreator.Mode.DELEGATING) cons
     }
 
     override fun equals(other: Any?): Boolean {
-        return if (other !is ChronicleData) false
-        else other.mapIndexed { index, chronicleSample -> this[index] == chronicleSample }.all { it }
+        if (other !is ChronicleData) return false
+        if (other.size != this.size) return false
+        return other.withIndex().all { (index, chronicleSample) -> this[index] == chronicleSample }
     }
 
     /**
