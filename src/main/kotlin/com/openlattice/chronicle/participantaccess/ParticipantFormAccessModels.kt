@@ -45,4 +45,7 @@ public data class ParticipantFormSessionResponse(
     val resourceId: UUID? = null,
     val logicalDate: LocalDate? = null,
     val expiresAt: OffsetDateTime,
+    /** Study participant-policy links, shown in the participant form footer. */
+    val privacyPolicyUrl: String? = null,
+    val withdrawalUrl: String? = null,
 )
