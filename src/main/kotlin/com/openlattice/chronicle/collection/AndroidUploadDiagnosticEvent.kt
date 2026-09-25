@@ -50,6 +50,8 @@ public data class AndroidUploadDiagnosticEvent(
             "USAGE_LIFECYCLE",
             "BATTERY",
             "DEVICE_TELEMETRY",
+            "SENSOR",
+            "APP_RUNTIME",
         )
         private val ISSUE_CODES = setOf(
             "DESTINATION_MISSING",
@@ -66,6 +68,12 @@ public data class AndroidUploadDiagnosticEvent(
             "TLS_FAILURE",
             "CONNECTION_FAILURE",
             "UPLOAD_FAILURE",
+            // Local dead-letter and process-exit counts: no payload, message, or stack text.
+            "SENSOR_SAMPLE_QUARANTINED",
+            "SENSOR_DEAD_LETTER_DROPPED",
+            "APP_CRASH",
+            "APP_CRASH_NATIVE",
+            "APP_ANR",
         )
     }
 }
