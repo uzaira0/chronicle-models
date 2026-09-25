@@ -72,6 +72,7 @@ public data class CollectionAcknowledgment(
         require(unavailableModules.all(SensorCollectionModules::isSensorModule)) {
             "Only per-sensor hardware modules may be reported unavailable"
         }
+        require(appVersion == null || appVersion.length <= 64) { "appVersion is too long" }
         require(settingsVersion == null || settingsVersion > 0) {
             "settingsVersion must be positive when supplied: $settingsVersion"
         }
