@@ -747,7 +747,9 @@
       "HealthMetrics",
       "ConnectivityState",
       "AppNetworkUsage",
-      "DeviceSettings"
+      "DeviceSettings",
+      "UploadDiagnostics",
+      "DataQualityAlerts"
     ],
     "participationStatuses": [
       "ENROLLED",

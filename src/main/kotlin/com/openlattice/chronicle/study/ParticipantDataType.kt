@@ -21,4 +21,6 @@ public enum class ParticipantDataType {
     ConnectivityState,
     AppNetworkUsage,
     DeviceSettings,
+    UploadDiagnostics,
+    DataQualityAlerts,
 }
