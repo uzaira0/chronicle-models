@@ -74,6 +74,10 @@ public data class AndroidUploadDiagnosticEvent(
             "APP_CRASH",
             "APP_CRASH_NATIVE",
             "APP_ANR",
+            // Local retention drops: counts only, so a researcher sees data the device discarded.
+            "SENSOR_AGE_EXPIRED",
+            "SENSOR_CAPACITY_DROPPED",
+            "USAGE_QUEUE_EVICTED",
         )
     }
 }
