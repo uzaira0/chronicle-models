@@ -26,6 +26,7 @@ SOURCE_FILES = {
     "collectionModuleId": "src/main/kotlin/com/openlattice/chronicle/collection/CollectionModuleId.kt",
     "collectionPrivacyClass": "src/main/kotlin/com/openlattice/chronicle/collection/CollectionPrivacyClass.kt",
     "sensorCollectionModules": "src/main/kotlin/com/openlattice/chronicle/collection/SensorCollectionModules.kt",
+    "collectionCadenceModules": "src/main/kotlin/com/openlattice/chronicle/collection/CollectionCadenceModules.kt",
     "androidSensorType": "src/main/kotlin/com/openlattice/chronicle/android/AndroidSensorType.kt",
     "iosSensorType": "src/main/kotlin/com/openlattice/chronicle/sensorkit/SensorType.kt",
     "studyFeature": "src/main/kotlin/com/openlattice/chronicle/study/StudyFeature.kt",
@@ -253,11 +254,19 @@ def build_contract() -> dict[str, Any]:
     sensor_module_ids = {mapping["collectionModuleId"] for mapping in sensor_mappings}
     fixture_registry = load_fixture_registry({module["id"] for module in collection_modules})
 
+    interval_gated_enums = set(
+        re.findall(r"CollectionModuleId\.([A-Z][A-Z0-9_]*)", strip_comments(read_source("collectionCadenceModules")))
+    )
+    unknown = interval_gated_enums - {module["enumName"] for module in collection_modules}
+    if unknown:
+        raise ValueError(f"CollectionCadenceModules references unknown modules {sorted(unknown)}")
+
     modules_with_sensor_flag = []
     for module in collection_modules:
         enriched = dict(module)
         enriched["androidSensorModule"] = module["id"] in sensor_module_ids
         enriched["activeDefaultEnabled"] = bool(module["active"] and module["defaultEnabled"])
+        enriched["intervalGated"] = module["enumName"] in interval_gated_enums
         modules_with_sensor_flag.append(enriched)
 
     return {
@@ -279,6 +288,9 @@ def build_contract() -> dict[str, Any]:
             ],
             "androidSensorModuleIds": [
                 module["id"] for module in modules_with_sensor_flag if module["androidSensorModule"]
+            ],
+            "intervalGatedCollectionModuleIds": [
+                module["id"] for module in modules_with_sensor_flag if module["intervalGated"]
             ],
             "privacyClasses": privacy_classes,
             "androidSensorTypes": parse_simple_kotlin_enum("androidSensorType", "AndroidSensorType"),
