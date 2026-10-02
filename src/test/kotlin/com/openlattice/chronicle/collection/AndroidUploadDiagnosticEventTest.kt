@@ -50,7 +50,7 @@ class AndroidUploadDiagnosticEventTest {
             "SAMPLE_QUARANTINED", "LOCAL_BUFFER_OVERFLOW", "LOCAL_REQUEUE_OVERFLOW", "LOCAL_WRITE_FAILED",
             "LOCAL_SHUTDOWN_DROPPED", "COLLECTION_GATE_DROPPED", "MODULE_POLICY_ERASED",
             "DISTRIBUTION_POLICY_ERASED", "DIRECT_BOOT_CAPACITY_DROPPED", "DIRECT_BOOT_CORRUPT_RECORD",
-            "COLLECTION_PAUSED_STORAGE",
+            "COLLECTION_PAUSED_STORAGE", "COLLECTION_ACCESS_MISSING",
         ).forEach { issueCode ->
             assertEquals(issueCode, fixture(issueCode = issueCode).issueCode)
         }

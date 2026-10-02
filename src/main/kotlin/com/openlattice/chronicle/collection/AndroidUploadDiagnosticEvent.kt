@@ -100,6 +100,8 @@ public data class AndroidUploadDiagnosticEvent(
             "DIRECT_BOOT_CAPACITY_DROPPED",
             "DIRECT_BOOT_CORRUPT_RECORD",
             "COLLECTION_PAUSED_STORAGE",
+            // An accepted module lost the Android access it collects through.
+            "COLLECTION_ACCESS_MISSING",
         )
     }
 }
