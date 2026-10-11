@@ -16,6 +16,10 @@ public data class StudyDuration(
     val months: Short = 0,
 
     @field:Min(value = 0, message = "Days cannot be negative")
-    @field:Max(value = 365, message = "Days exceeds maximum allowed")
-    val days: Short = 0,
-)
+    @field:Max(value = MAX_EXACT_DAYS, message = "Days exceeds maximum allowed")
+    val days: Int = 0,
+) {
+    public companion object {
+        public const val MAX_EXACT_DAYS: Long = 36_500
+    }
+}
