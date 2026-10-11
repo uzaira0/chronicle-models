@@ -67,14 +67,5 @@ public object RetrofitBuilders {
     public fun createBaseChronicleRetrofitBuilder(baseUrl: String, httpClient: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder().baseUrl(baseUrl).client(httpClient)
     }
-    /** A dedicated adapter for one researcher create, reused with the same DTO after response loss. */
-    @JvmStatic
-    public fun createResearcherCreateRetrofitBuilder(
-        baseUrl: String,
-        httpClient: OkHttpClient,
-        intent: ResearcherCreateIntent,
-    ): Retrofit.Builder = createBaseChronicleRetrofitBuilder(
-        baseUrl, httpClient.newBuilder().addInterceptor(intent).build(),
-    )
 
 }
