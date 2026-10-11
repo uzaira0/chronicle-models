@@ -27,4 +27,5 @@ public data class Participant(
 
     @param:JsonProperty("participantNotes") val participantNotes: String? = null,
     @param:JsonProperty("participantTags") val participantTags: Set<String> = emptySet(),
+    val withdrawnAt: java.time.OffsetDateTime? = null,
 )

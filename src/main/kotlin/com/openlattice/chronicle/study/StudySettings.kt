@@ -11,6 +11,11 @@ import com.fasterxml.jackson.annotation.JsonCreator
 public class StudySettings @JsonCreator(mode = JsonCreator.Mode.DELEGATING) constructor( settings: Map<StudySettingType, StudySetting> = mapOf()) :
     Map<StudySettingType, StudySetting> by LinkedHashMap(settings) {
     private val h = settings.hashCode()
+    init {
+        require(StudySettingType.Withdrawal !in settings || settings[StudySettingType.Withdrawal] is StudyWithdrawalSetting) {
+            "Invalid withdrawal setting"
+        }
+    }
     override fun equals(other: Any?): Boolean {
         return if (other !is StudySettings) return false
         else {
@@ -34,4 +39,5 @@ public enum class StudySettingType {
     Pipeline,
     Encryption,
     ParticipantPolicy,
+    Withdrawal,
 }

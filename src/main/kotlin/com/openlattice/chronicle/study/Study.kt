@@ -116,6 +116,7 @@ public class Study(
         public fun initialSettings(title: String, labFriendlyName: String = ""): StudySettings {
             return StudySettings(
                 mapOf(
+                    StudySettingType.Withdrawal to StudyWithdrawalSetting(),
                     StudySettingType.Notifications to StudyNotificationSettings(
                         labFriendlyName = "",
                         studyFriendlyName = title
@@ -198,5 +199,4 @@ public class Study(
     }
 
 }
-
 
