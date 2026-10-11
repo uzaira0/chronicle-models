@@ -131,9 +131,9 @@ public data class AndroidInteractionEvent(
      * node bounds and display context.
      */
     public val normalizedY: Double? = null,
-    /** Signed horizontal scroll delta for a [InteractionEventType.SCROLL]; `null` otherwise / if unknown. */
+    /** Signed horizontal scroll delta in pixels for a [InteractionEventType.SCROLL]; `null` otherwise / if unknown. */
     public val scrollDeltaX: Int? = null,
-    /** Signed vertical scroll delta for a [InteractionEventType.SCROLL]; `null` otherwise / if unknown. */
+    /** Signed vertical scroll delta in pixels for a [InteractionEventType.SCROLL]; `null` otherwise / if unknown. */
     public val scrollDeltaY: Int? = null,
     /**
      * Monotonic event time in milliseconds since boot (`AccessibilityEvent.getEventTime()` /

@@ -14,9 +14,9 @@ import java.util.*
  * This class describes the default limits (quotas) placed on a study.
  *
  * @param studyDuration How long a study is allowed to run for
- * @param dataRetentionDuration The amount of time after a study ends that data will be retained by the platform.
+ * @param dataRetentionDuration Time after study end before the dashboard and monitoring request explicit deletion.
  * @param studyEndDateTime The end datetime the study can run until.
- * @param studyDataExpirationDateTime The datetime at which the study will be expired.
+ * @param studyDataExpirationDateTime The retention deadline; access continues until explicit deletion.
  * @param participantLimit The number of participants allowed in a study.
  * @param features The modules enabled for this study.
  *
