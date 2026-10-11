@@ -756,7 +756,8 @@
       "NOT_ENROLLED",
       "PAUSED",
       "COLLECTION_COMPLETED",
-      "UNKNOWN"
+      "UNKNOWN",
+      "ERASED"
     ],
     "studyLifecycleStatuses": [
       "ACTIVE",
