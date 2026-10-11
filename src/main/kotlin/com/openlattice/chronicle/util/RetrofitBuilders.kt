@@ -19,6 +19,8 @@
  */
 package com.openlattice.chronicle.util
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -41,6 +43,8 @@ public object RetrofitBuilders {
     init {
         mapper.registerModule(GuavaModule())
         mapper.registerModule(JavaTimeModule())
+        mapper.registerModule(Jdk8Module())
+        mapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE)
         mapper.registerKotlinModule()
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         @Suppress("DEPRECATION")
