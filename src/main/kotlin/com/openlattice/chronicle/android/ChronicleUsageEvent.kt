@@ -16,8 +16,8 @@ import java.util.*
  * @param timezone (text)
  * @param user (text)
  * @param applicationLabel (text)
- * @param collectedAt time the event batch was durably written to the device's local upload queue;
- * null for clients released before this field existed — the server falls back to its receipt time
+ * @param clientEventId identity assigned once when the phone queues the event; the server stores each ID at
+ * most once per study participant, so a retried upload cannot duplicate the event
  */
 public data class ChronicleUsageEvent(
     val studyId: UUID,
@@ -30,7 +30,7 @@ public data class ChronicleUsageEvent(
     val user: String,
     val applicationLabel: String,
     val activityClass: String? = null,
-    val collectedAt: OffsetDateTime? = null,
+    val clientEventId: UUID? = null,
 ) : ChronicleSample
 
 public fun fromInteractionType(interactionType: String): Int {

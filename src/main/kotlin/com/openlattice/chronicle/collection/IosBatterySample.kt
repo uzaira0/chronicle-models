@@ -34,8 +34,11 @@ public data class IosBatterySample(
     public val chargingState: BatteryChargingState,
     /** Whether Low Power Mode was active at sample time; null when unknown. */
     public val lowPowerMode: Boolean? = null,
+    /** Collector build recorded at capture; null when the collector did not preserve it. */
+    public val producerVersion: String? = null,
 ) {
     init {
+        requireProducerVersion(producerVersion)
         require(levelPercent in 0..100) {
             "IosBatterySample.levelPercent must be in 0..100: $levelPercent"
         }

@@ -1,12 +1,18 @@
 package com.openlattice.chronicle.collection
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.openlattice.chronicle.generated.UploadDiagnosticConstraints.MAX_ERROR_TYPE_LENGTH
+import com.openlattice.chronicle.generated.UploadDiagnosticConstraints.MAX_ISSUE_CODE_LENGTH
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
 /**
- * One bounded, redacted Android upload-diagnostic aggregate.
+ * One bounded, redacted Android diagnostic occurrence: [count] equivalent failures at one instant.
+ *
+ * The phone cannot see a pause or archive window the server applies, so it never merges occurrences
+ * of different instants; the server filters each event by its participation window and aggregation
+ * happens only after that.
  *
  * Study, participant, device, and destination identity are supplied by the authenticated v4
  * request path and connection and are deliberately not duplicated in this body. Credentials,
@@ -18,14 +24,15 @@ import java.util.UUID
 public data class AndroidUploadDiagnosticEvent(
     /** Client-generated idempotency identifier. */
     public val id: String,
-    /** Local calendar day used for bounded aggregation. */
+    /** Local calendar day of the occurrence. */
     public val day: LocalDate,
     /** Closed Android upload family such as USAGE_LIFECYCLE or DEVICE_TELEMETRY. */
     public val moduleFamily: String,
-    /** Closed, redacted failure category. */
+    /** Redacted failure category; see [recognizedIssueCode]. */
     public val issueCode: String,
-    /** Number of equivalent failures represented by this aggregate. */
+    /** Number of equivalent failures observed at this instant. */
     public val count: Int,
+    /** The occurrence instant; equal to [lastOccurredAt]. */
     public val firstOccurredAt: OffsetDateTime,
     public val lastOccurredAt: OffsetDateTime,
     /** HTTP response status when one was received. */
@@ -36,13 +43,20 @@ public data class AndroidUploadDiagnosticEvent(
     init {
         require(runCatching { UUID.fromString(id) }.isSuccess) { "Diagnostic id must be a UUID" }
         require(moduleFamily in MODULE_FAMILIES) { "Invalid diagnostic module family" }
-        require(issueCode in ISSUE_CODES) { "Invalid diagnostic issue code" }
+        require(issueCode.codePointCount(0, issueCode.length) <= MAX_ISSUE_CODE_LENGTH) { "Diagnostic issueCode is too long" }
         require(count > 0) { "Diagnostic count must be positive" }
-        require(!lastOccurredAt.isBefore(firstOccurredAt)) {
-            "Diagnostic lastOccurredAt must not precede firstOccurredAt"
+        require(lastOccurredAt.isEqual(firstOccurredAt)) {
+            "A diagnostic event is one instant; firstOccurredAt must equal lastOccurredAt"
         }
         require(httpStatus == null || httpStatus in 100..599) { "Invalid diagnostic HTTP status" }
-        require(errorType == null || errorType.length <= 128) { "Diagnostic errorType is too long" }
+        require(errorType == null || errorType.codePointCount(0, errorType.length) <= MAX_ERROR_TYPE_LENGTH) { "Diagnostic errorType is too long" }
+    }
+
+    /** A code this build does not know, from a newer app, is stored as UNRECOGNIZED_ISSUE instead of refusing the batch. */
+    public fun recognizedIssueCode(): AndroidUploadIssueCode = try {
+        AndroidUploadIssueCode.valueOf(issueCode)
+    } catch (_: IllegalArgumentException) {
+        AndroidUploadIssueCode.UNRECOGNIZED_ISSUE
     }
 
     private companion object {
@@ -63,45 +77,6 @@ public data class AndroidUploadDiagnosticEvent(
             "APP_NETWORK",
             "DEVICE_SETTINGS",
             "LOCAL_STORE",
-        )
-        private val ISSUE_CODES = setOf(
-            "DESTINATION_MISSING",
-            "DESTINATION_IDENTITY_MISMATCH",
-            "DESTINATION_SOURCE_DEVICE_MISSING",
-            "DESTINATION_SETUP_INCOMPLETE",
-            "DESTINATION_DISABLED",
-            "DESTINATION_NONCANONICAL",
-            "DESTINATION_CREDENTIAL_INCOMPLETE",
-            "HTTP_SERVER_ERROR",
-            "HTTP_CLIENT_ERROR",
-            "TIMEOUT",
-            "DNS_FAILURE",
-            "TLS_FAILURE",
-            "CONNECTION_FAILURE",
-            "UPLOAD_FAILURE",
-            // Local dead-letter and process-exit counts: no payload, message, or stack text.
-            "SENSOR_SAMPLE_QUARANTINED",
-            "SENSOR_DEAD_LETTER_DROPPED",
-            "APP_CRASH",
-            "APP_CRASH_NATIVE",
-            "APP_ANR",
-            // Local retention drops: counts only, so a researcher sees data the device discarded.
-            "SENSOR_AGE_EXPIRED",
-            "SENSOR_CAPACITY_DROPPED",
-            "USAGE_QUEUE_EVICTED",
-            "SAMPLE_QUARANTINED",
-            "LOCAL_BUFFER_OVERFLOW",
-            "LOCAL_REQUEUE_OVERFLOW",
-            "LOCAL_WRITE_FAILED",
-            "LOCAL_SHUTDOWN_DROPPED",
-            "COLLECTION_GATE_DROPPED",
-            "MODULE_POLICY_ERASED",
-            "DISTRIBUTION_POLICY_ERASED",
-            "DIRECT_BOOT_CAPACITY_DROPPED",
-            "DIRECT_BOOT_CORRUPT_RECORD",
-            "COLLECTION_PAUSED_STORAGE",
-            // An accepted module lost the Android access it collects through.
-            "COLLECTION_ACCESS_MISSING",
         )
     }
 }

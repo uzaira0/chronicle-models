@@ -1,6 +1,7 @@
 package com.openlattice.chronicle.collection
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.openlattice.chronicle.generated.ProducerVersionConstraints
 import java.time.OffsetDateTime
 
 /** Charging state of the device battery at sample time. */
@@ -33,8 +34,7 @@ public enum class BatteryHealth {
 }
 
 /**
- * One battery-telemetry sample produced by the `battery_telemetry` collection module
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §5).
+ * One battery-telemetry sample produced by the `battery_telemetry` collection module.
  *
  * This is the shared **wire contract** between the Android `:collection-battery`
  * module and the server. It is `DEVICE_STATE_METADATA`-class data — no participant
@@ -68,13 +68,25 @@ public data class BatterySample(
     public val voltageMillivolts: Int,
     /** Reported battery health at sample time. */
     public val health: BatteryHealth,
+    /** Collector build recorded at capture; null when an older collector did not preserve it. */
+    public val producerVersion: String? = null,
 ) {
     init {
+        requireProducerVersion(producerVersion)
         require(levelPercent in 0..100) {
             "BatterySample.levelPercent must be in 0..100: $levelPercent"
         }
         require(voltageMillivolts >= 0) {
             "BatterySample.voltageMillivolts must be non-negative: $voltageMillivolts"
         }
+    }
+}
+
+private val producerVersionPattern = Regex(ProducerVersionConstraints.PATTERN)
+
+internal fun requireProducerVersion(version: String?) {
+    require(version == null || (version.codePointCount(0, version.length) <= ProducerVersionConstraints.MAX_LENGTH &&
+        producerVersionPattern.matches(version))) {
+        "producerVersion must be nonblank and at most ${ProducerVersionConstraints.MAX_LENGTH} characters"
     }
 }
