@@ -49,10 +49,10 @@ public class Study(
     @field:DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
     public val lon: Double = 0.0,
 
-    @field:Size(max = 255, message = "Group exceeds maximum length")
+    @field:Size(max = 500, message = "Group exceeds maximum length")
     public val group: String = "",
 
-    @field:Size(max = 50, message = "Version exceeds maximum length")
+    @field:Size(max = 500, message = "Version exceeds maximum length")
     public val version: String = "",
 
     @field:NotBlank(message = "Contact is required")
@@ -70,7 +70,7 @@ public class Study(
 
     public val modules: Map<StudyFeature, Any> = mapOf(),
 
-    @field:Size(max = 20, message = "Phone number exceeds maximum length")
+    @field:Size(max = 255, message = "Phone number exceeds maximum length")
     public val phoneNumber: String = "",
 
     @get:JsonIgnore

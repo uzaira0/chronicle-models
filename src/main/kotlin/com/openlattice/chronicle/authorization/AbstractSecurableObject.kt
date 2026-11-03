@@ -37,10 +37,10 @@ public abstract class AbstractSecurableObject private constructor(
         @param:JsonProperty(JsonFields.ID_FIELD) public var id: UUID,
 
         @field:NotBlank(message = "Title is required")
-        @field:Size(max = 255, message = "Title exceeds maximum length")
+        @field:Size(max = 2000, message = "Title exceeds maximum length")
         @param:JsonProperty(JsonFields.TITLE_FIELD) public var title: String,
 
-        @field:Size(max = 4000, message = "Description exceeds maximum length")
+        @field:Size(max = 20_000, message = "Description exceeds maximum length")
         @param:JsonProperty(JsonFields.DESCRIPTION_FIELD) public var description: String,
 
         @JsonIgnore private val idPresent: Boolean

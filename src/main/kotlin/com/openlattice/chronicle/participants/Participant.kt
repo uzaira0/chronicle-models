@@ -26,8 +26,11 @@ public data class Participant(
     @field:NotNull(message = "Participation status is required")
     @param:JsonProperty(JsonFields.PARTICIPATION_STATUS) val participationStatus: ParticipationStatus,
 
+    @field:Size(max = 50_000, message = "Participant notes exceed maximum length")
     @param:JsonProperty("participantNotes") val participantNotes: String? = null,
-    @param:JsonProperty("participantTags") val participantTags: Set<String> = emptySet(),
+    @field:Size(max = 1000, message = "Participant has too many tags")
+    @param:JsonProperty("participantTags")
+    val participantTags: Set<@Size(max = 255, message = "Participant tag exceeds maximum length") String> = emptySet(),
     val withdrawnAt: java.time.OffsetDateTime? = null,
     val processingBlockedAt: java.time.OffsetDateTime? = null,
     val processingBlockReason: String? = null,

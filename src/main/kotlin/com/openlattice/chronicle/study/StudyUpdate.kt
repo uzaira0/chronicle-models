@@ -12,10 +12,10 @@ import java.time.OffsetDateTime
  * @author Solomon Tang <solomon@openlattice.com>
  */
 public data class StudyUpdate(
-    @field:Size(max = 255, message = "Title exceeds maximum length")
+    @field:Size(max = 2000, message = "Title exceeds maximum length")
     val title: String? = null,
 
-    @field:Size(max = 4000, message = "Description exceeds maximum length")
+    @field:Size(max = 20_000, message = "Description exceeds maximum length")
     val description: String? = null,
 
     @field:DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
@@ -26,16 +26,16 @@ public data class StudyUpdate(
     @field:DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
     val lon: Double? = null,
 
-    @field:Size(max = 255, message = "Group exceeds maximum length")
+    @field:Size(max = 500, message = "Group exceeds maximum length")
     val group: String? = null,
 
-    @field:Size(max = 50, message = "Version exceeds maximum length")
+    @field:Size(max = 500, message = "Version exceeds maximum length")
     val version: String? = null,
 
     @field:Valid
     val settings: StudySettings? = null,
 
-    val modules: Map<String, Any>? = null,
+    val modules: Map<StudyFeature, Any>? = null,
 
     @field:Size(max = 255, message = "Contact exceeds maximum length")
     val contact: String? = null,

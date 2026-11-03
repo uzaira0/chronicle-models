@@ -1,6 +1,8 @@
 package com.openlattice.chronicle.collection
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.openlattice.chronicle.generated.CollectionAcknowledgmentConstraints.MAX_APP_VERSION_UTF16_LENGTH
+import jakarta.validation.constraints.Size
 import java.time.OffsetDateTime
 
 /**
@@ -44,6 +46,7 @@ public data class CollectionAcknowledgment(
     /** What produced this decision. Defaults to [ConsentTrigger.ENROLLMENT] for legacy payloads. */
     val trigger: ConsentTrigger = ConsentTrigger.ENROLLMENT,
     /** Optional app version string, for diagnostics. */
+    @field:Size(max = MAX_APP_VERSION_UTF16_LENGTH, message = "App version exceeds maximum length")
     val appVersion: String? = null,
     /** Settings revision whose policy the participant accepted or declined. */
     val settingsVersion: Int? = null,
@@ -77,7 +80,7 @@ public data class CollectionAcknowledgment(
         require(unavailableModules.all(SensorCollectionModules::isSensorModule)) {
             "Only per-sensor hardware modules may be reported unavailable"
         }
-        require(appVersion == null || appVersion.length <= 64) { "appVersion is too long" }
+        require(appVersion == null || appVersion.length <= MAX_APP_VERSION_UTF16_LENGTH) { "appVersion is too long" }
         require(decisionSeq == null || decisionSeq > 0) { "decisionSeq must be positive when supplied: $decisionSeq" }
         require(settingsVersion == null || settingsVersion > 0) {
             "settingsVersion must be positive when supplied: $settingsVersion"
