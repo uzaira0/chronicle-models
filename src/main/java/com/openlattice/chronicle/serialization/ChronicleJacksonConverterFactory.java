@@ -1,10 +1,10 @@
 package com.openlattice.chronicle.serialization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -61,7 +61,7 @@ public class ChronicleJacksonConverterFactory extends Factory {
                 }
             } else if ( StringUtils.startsWith( rawContentType,
                     com.google.common.net.MediaType.PLAIN_TEXT_UTF_8.type() ) ) {
-                return IOUtils.toString( responseBody.byteStream(), Charsets.UTF_8 );
+                return IOUtils.toString( responseBody.byteStream(), StandardCharsets.UTF_8 );
             }
             throw new IOException( "Unsupported response content type " + rawContentType + " for " + type );
         };
