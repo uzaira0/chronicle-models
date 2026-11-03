@@ -290,26 +290,6 @@
       "backendTable": "app_network_usage"
     },
     {
-      "family": "encrypted-payloads",
-      "collectionModuleId": null,
-      "payloadSchemaVersion": 1,
-      "jvmClass": "com.openlattice.chronicle.crypto.EncryptedEnvelope",
-      "fixtureFiles": [
-        "fixtures/payloads/encrypted-payloads/valid.json",
-        "fixtures/payloads/encrypted-payloads/invalid-blank-key-id.json",
-        "fixtures/payloads/encrypted-payloads/invalid-unknown-payload-type.json"
-      ],
-      "timeSemantics": "no event time on the envelope; the sealed plaintext batch carries per-sample timestamps and the backend stamps ingest time",
-      "scopingFields": [
-        "studyId",
-        "participantId",
-        "payloadType"
-      ],
-      "backendHandler": "EncryptedPayloadUploadService",
-      "backendTable": "encrypted_payloads",
-      "notes": "payloadType routes the blind ciphertext; studyId/participantId are AAD-bound from the request path, never carried in the envelope."
-    },
-    {
       "family": "ios-device",
       "collectionModuleId": null,
       "payloadSchemaVersion": 1,

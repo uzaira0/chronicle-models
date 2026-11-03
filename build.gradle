@@ -86,14 +86,6 @@ dependencies {
 
     implementation "com.google.guava:guava:${guava_android_version}"
 
-    // BouncyCastle: ML-KEM (FIPS 203) for the post-quantum half of the hybrid envelope
-    // key-wrap (HIPAA-2028 W2). JDK 21 and Android JCA ship no PQC, so the shared crypto
-    // needs a provider; BC's low-level org.bouncycastle.pqc.crypto.mlkem API runs identically
-    // on the Android collector and the backend (the seal/open parity guarantee). `api` so the
-    // Android app, which consumes chronicle-models, gets it transitively. Version pinned by
-    // the central force block in gradles/chronicle.gradle.
-    api "org.bouncycastle:bcprov-jdk18on:${bouncycastle_version}"
-
     // Jakarta Validation for @NotBlank, @Size, etc. annotations on data classes
     implementation "jakarta.validation:jakarta.validation-api:${jakarta_validation_api_version}"
 
