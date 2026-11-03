@@ -15,7 +15,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "AndroidSensorDataUploadService",
       "backendTable": "android_sensor_data",
@@ -52,7 +52,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "deviceId"
+        "randomDeviceId"
       ],
       "backendHandler": "ScreenTimeUsageUploadService",
       "backendTable": "sensor_data",
@@ -162,7 +162,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "AppAudioActivityUploadService",
       "backendTable": "app_audio_activity"
@@ -179,7 +179,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "AppAudioContentUploadService",
       "backendTable": "app_audio_content"
@@ -196,7 +196,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "NotificationActivityUploadService",
       "backendTable": "notification_activity"
@@ -214,7 +214,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "SleepEventsUploadService",
       "backendTable": "sleep_events"
@@ -231,7 +231,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "ActivityRecognitionEventsUploadService",
       "backendTable": "activity_recognition_events"
@@ -249,7 +249,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "HealthMetricsUploadService",
       "backendTable": "health_metrics"
@@ -266,7 +266,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "ConnectivityStateEventsUploadService",
       "backendTable": "connectivity_state_events"
@@ -284,7 +284,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "AppNetworkUsageUploadService",
       "backendTable": "app_network_usage"
@@ -322,7 +322,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "deviceId"
+        "randomDeviceId"
       ],
       "backendHandler": "EnrollmentService",
       "backendTable": "DEVICES",

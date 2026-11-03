@@ -34,9 +34,9 @@ public class IOSDevice @JsonCreator constructor(
         @field:Size(max = 50, message = "Version exceeds maximum length")
         public val version: String,
 
-        @field:NotBlank(message = "Device ID is required")
-        @field:Size(max = 255, message = "Device ID exceeds maximum length")
-        public val deviceId: String,
+        @field:NotBlank(message = "Random device ID is required")
+        @field:Size(max = 255, message = "Random device ID exceeds maximum length")
+        public val randomDeviceId: String,
 
         @field:Size(max = 500, message = "APN device token exceeds maximum length")
         public val apnDeviceToken: String = "" //This is the token for device push notifications.
@@ -55,15 +55,15 @@ public class IOSDevice @JsonCreator constructor(
                 model == other.model &&
                 localizedModel == other.localizedModel &&
                 version == other.version &&
-                deviceId == other.deviceId
+                randomDeviceId == other.randomDeviceId
 
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(name, systemName, model, localizedModel, version, deviceId)
+        return Objects.hash(name, systemName, model, localizedModel, version, randomDeviceId)
     }
 
     override fun toString(): String {
-        return "IOSDevice{name=$name, systemName=$systemName, model=$model, localizedModel=$localizedModel, version=$version, deviceId=$deviceId }"
+        return "IOSDevice{name=$name, systemName=$systemName, model=$model, localizedModel=$localizedModel, version=$version, randomDeviceId=$randomDeviceId }"
     }
 }

@@ -21,7 +21,7 @@ import java.time.OffsetDateTime
  * receipt time when it persists the entry — see [CollectionAcknowledgmentEntry.recordedAt].
  *
  * Carries no `apiKey`, signing secret, or other credential — auth rides the
- * `X-Api-Key` / `X-Chronicle-Device-Id` headers like the other v4 android writes.
+ * `X-Api-Key` / `X-Chronicle-Random-Device-Id` headers like the other v4 android writes.
  *
  * @author uzaira0
  */

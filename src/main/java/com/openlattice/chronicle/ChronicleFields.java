@@ -9,7 +9,7 @@ public final class ChronicleFields {
     public static final String MODEL           = "model";
     public static final String PRODUCT         = "product";
     public static final String CODENAME        = "codename";
-    public static final String DEVICE_ID       = "deviceId";
+    public static final String RANDOM_DEVICE_ID       = "randomDeviceId";
     public static final String OS_VERSION      = "osVersion";
     public static final String SDK_VERSION     = "sdkVersion";
     public static final String ADDITIONAL_INFO = "additionalInfo";

@@ -15,7 +15,8 @@ public enum class InteractionPointerCaptureCapability {
 /**
  * A device's reported hardware/display capability profile (the `sensor_availability` module).
  *
- * Besides which modeled sensors the device exposes, this report carries the device's **static
+ * [availableSensors] lists every modeled [AndroidSensorType] the device has, checked whether or not any sensor module
+ * is enabled; a type missing from it is one the device lacks. Besides that list, this report carries the device's **static
  * display context** — screen resolution + density + natural display rotation. That context is
  * what makes raw on-screen pixel coordinates (e.g. from `interaction_events`) and orientation
  * signals (e.g. from `sensor_screen_orientation`) interpretable, so it is captured here **at
@@ -26,9 +27,8 @@ public enum class InteractionPointerCaptureCapability {
 @JsonIgnoreProperties(ignoreUnknown = true)
 public data class AndroidDeviceSensorAvailability(
     val participantId: String = "",
-    val deviceId: String = "",
+    val randomDeviceId: String = "",
     val availableSensors: Set<AndroidSensorType> = emptySet(),
-    val unavailableSensors: Set<AndroidSensorType> = emptySet(),
     /** Display width in pixels at report time (`DisplayMetrics.widthPixels`); null if unavailable. */
     val screenWidthPixels: Int? = null,
     /** Display height in pixels at report time (`DisplayMetrics.heightPixels`); null if unavailable. */

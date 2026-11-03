@@ -22,7 +22,7 @@ public data class CollectionAcknowledgmentEntry(
     val id: UUID = UUID.randomUUID(),
     val studyId: UUID,
     val participantId: String,
-    val sourceDeviceId: String,
+    val sourceRandomDeviceId: String,
     /** The modules the participant **accepted** in this snapshot. */
     val acknowledgedModules: Set<CollectionModuleId>,
     /** Device-reported acknowledgment time (advisory). */

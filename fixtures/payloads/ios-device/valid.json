@@ -5,6 +5,6 @@
   "model" : "iPhone",
   "localizedModel" : "iPhone",
   "version" : "17.5",
-  "deviceId" : "00000000-0000-4000-8000-0000000000d1",
+  "randomDeviceId" : "00000000-0000-4000-8000-0000000000d1",
   "apnDeviceToken" : ""
 }

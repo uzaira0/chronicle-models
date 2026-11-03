@@ -42,9 +42,9 @@ public data class AndroidDevice(
     @field:Size(max = 255, message = "Product exceeds maximum length")
     @param:JsonProperty(ChronicleFields.PRODUCT) val product: String,
 
-    @field:NotBlank(message = "Device ID is required")
-    @field:Size(max = 255, message = "Device ID exceeds maximum length")
-    @param:JsonProperty(ChronicleFields.DEVICE_ID) val deviceId: String,
+    @field:NotBlank(message = "Random device ID is required")
+    @field:Size(max = 255, message = "Random device ID exceeds maximum length")
+    @param:JsonProperty(ChronicleFields.RANDOM_DEVICE_ID) val randomDeviceId: String,
 
     @param:JsonProperty(ChronicleFields.ADDITIONAL_INFO) val additionalInfo: Map<String, Any> = mapOf(),
 
