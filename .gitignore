@@ -1,6 +1,13 @@
 build/
 .gradle/
+# Kotlin compile daemon state (sessions/*.salive is rewritten on every build)
+.kotlin/
 *.class
 *.jar
 *.log
 
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
