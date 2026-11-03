@@ -1,7 +1,6 @@
 package com.openlattice.chronicle.notifications
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.openlattice.chronicle.study.StudyDuration
 import com.openlattice.chronicle.study.StudySetting
 import jakarta.validation.Valid
@@ -14,7 +13,6 @@ import jakarta.validation.constraints.Size
  *
  * This class holds default settings for sending participant notifications.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public data class StudyNotificationSettings(
     @field:NotNull(message = "Lab friendly name is required")
     @field:Size(max = 255, message = "Lab friendly name exceeds maximum length")

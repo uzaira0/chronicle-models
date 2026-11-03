@@ -1,7 +1,6 @@
 package com.openlattice.chronicle.sources
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.openlattice.chronicle.ChronicleFields
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -12,7 +11,6 @@ import java.util.*
  * @author Matthew Tamayo-Rios &lt;matthew@getmethodic.com&gt;
  */
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public data class AndroidDevice(
     @field:NotBlank(message = "Device name is required")
     @field:Size(max = 255, message = "Device name exceeds maximum length")
