@@ -29,6 +29,11 @@ public data class Participant(
     @param:JsonProperty("participantNotes") val participantNotes: String? = null,
     @param:JsonProperty("participantTags") val participantTags: Set<String> = emptySet(),
     val withdrawnAt: java.time.OffsetDateTime? = null,
+    val processingBlockedAt: java.time.OffsetDateTime? = null,
+    val processingBlockReason: String? = null,
+    val processingBlockedBy: String? = null,
+    /** Server-assigned; a status change sends it back as If-Match. Ignored on registration. */
+    val statusRevision: Long = 0,
     /** Server-derived from the participant's decisions; null before any device enrolled. Ignored on registration. */
     val consentState: ParticipantConsentState? = null,
 )

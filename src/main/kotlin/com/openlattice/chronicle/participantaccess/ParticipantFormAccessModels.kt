@@ -22,6 +22,7 @@ public data class ParticipantFormAccessCodeResponse(
 
 public data class ExchangeParticipantFormAccessCodeRequest(
     val accessCode: String,
+    val attemptId: UUID,
 )
 
 /**

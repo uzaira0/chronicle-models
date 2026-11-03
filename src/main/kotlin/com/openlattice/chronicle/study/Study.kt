@@ -72,6 +72,9 @@ public class Study(
 
     @field:Size(max = 20, message = "Phone number exceeds maximum length")
     public val phoneNumber: String = "",
+
+    @get:JsonIgnore
+    public val settingsRevision: Long = 0,
 ) : AbstractSecurableObject(studyId, title, description) {
     public companion object {
         /***
@@ -155,6 +158,7 @@ public class Study(
         if (organizationIds != other.organizationIds) return false
         if (storage != other.storage) return false
         if (settings != other.settings) return false
+        if (settingsRevision != other.settingsRevision) return false
         if (modules != other.modules) return false
         if (phoneNumber != other.phoneNumber) return false
         if (category != other.category) return false
@@ -176,6 +180,7 @@ public class Study(
         result = 31 * result + organizationIds.hashCode()
         result = 31 * result + storage.hashCode()
         result = 31 * result + settings.hashCode()
+        result = 31 * result + settingsRevision.hashCode()
         result = 31 * result + modules.hashCode()
         result = 31 * result + phoneNumber.hashCode()
         result = 31 * result + category.hashCode()
