@@ -1,9 +1,11 @@
 package com.openlattice.chronicle.collection
 
+import com.openlattice.chronicle.generated.CollectionDefaultValues
+
 /**
- * How often a collection or upload action runs (design §1B.2).
+ * How often a collection action runs.
  *
- * Validation (design §1B.4): a non-positive [intervalSeconds] is rejected — cadence
+ * Validation: a non-positive [intervalSeconds] is rejected — cadence
  * must always be a positive interval. [jitterSeconds] must be non-negative and is
  * clamped against the interval so jitter can never exceed the interval itself.
  *
@@ -11,7 +13,7 @@ package com.openlattice.chronicle.collection
  */
 public data class CollectionCadence(
     /** Base interval between actions, in seconds. Must be positive. */
-    val intervalSeconds: Long = 900L,
+    val intervalSeconds: Long = CollectionDefaultValues.INTERVAL_SECONDS,
     /** Random spread added to the interval, in seconds. Non-negative, <= [intervalSeconds]. */
     val jitterSeconds: Long = 0L,
 ) {
@@ -30,8 +32,5 @@ public data class CollectionCadence(
     public companion object {
         /** Default usage/lifecycle polling cadence. */
         public val DEFAULT_COLLECTION: CollectionCadence = CollectionCadence(intervalSeconds = 900L)
-
-        /** Default upload cadence. */
-        public val DEFAULT_UPLOAD: CollectionCadence = CollectionCadence(intervalSeconds = 3600L)
     }
 }

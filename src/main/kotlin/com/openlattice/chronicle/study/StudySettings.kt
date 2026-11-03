@@ -27,17 +27,3 @@ public class StudySettings @JsonCreator(mode = JsonCreator.Mode.DELEGATING) cons
 
     override fun hashCode(): Int = h
 }
-
-public enum class StudySettingType {
-    DataCollection,
-    Notifications,
-    Sensor,
-    TimeUseDiary,
-    Survey,
-    AndroidSensor,
-    DataQuality,
-    Pipeline,
-    Encryption,
-    ParticipantPolicy,
-    Withdrawal,
-}

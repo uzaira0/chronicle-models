@@ -4,15 +4,6 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
-/** Stable wire values shared by today's JVM/TypeScript clients and future Serde clients. */
-public enum class ParticipantFormKind {
-    ENROLLMENT,
-    APP_USAGE,
-    QUESTIONNAIRE,
-    TIME_USE_DIARY,
-    PORTAL,
-}
-
 public data class CreateParticipantFormAccessCodeRequest(
     val formKind: ParticipantFormKind,
     val resourceId: UUID? = null,
