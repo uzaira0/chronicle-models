@@ -7,6 +7,7 @@ import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.Retrofit
 import java.io.IOException
+import java.io.UncheckedIOException
 import java.lang.reflect.Type
 
 /**
@@ -49,8 +50,9 @@ public class ChronicleCallAdapterFactory : CallAdapter.Factory() {
                         )
                     }
                 } catch (e: IOException) {
-                    logger.error("Call to ${call.request().url.redactedForLogging()} failed due to exception.", e)
-                    throw e
+                    // A Kotlin interface declares no checked exceptions, so the proxy would wrap
+                    // this in UndeclaredThrowableException.
+                    throw UncheckedIOException(e)
                 }
             }
         }
