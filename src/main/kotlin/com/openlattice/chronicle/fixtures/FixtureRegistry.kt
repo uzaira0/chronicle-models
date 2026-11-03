@@ -8,8 +8,8 @@ import java.io.File
  * Parsed, validated view of `fixtures/payloads/registry.json` (shared-contracts
  * Tranche 3). Validation lives here — factored out of the test methods — so the
  * same rules are unit-testable against deliberately malformed registry JSON. The
- * Python generator (`scripts/generate-domain-contracts.py`) enforces the same
- * rules before embedding the registry into the generated contract artifact.
+ * Root contract generation embeds this declared JSON registry. The JVM fixture
+ * tests validate it here alongside the actual model types and payloads.
  */
 public data class FixtureFamily(
     val family: String,
