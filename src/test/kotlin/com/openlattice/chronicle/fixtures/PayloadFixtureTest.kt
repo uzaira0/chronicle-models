@@ -11,13 +11,12 @@ import org.junit.Test
 import java.io.File
 
 /**
- * JVM gates for the canonical payload fixtures (shared-contracts Tranche 3,
- * docs/shared-contracts/03-domain-contract-catalog.md "Upload Envelope Schema
+ * JVM gates for the canonical payload fixtures
+ * (docs/shared-contracts/03-domain-contract-catalog.md "Upload Envelope Schema
  * Versions and Fixture Names").
  *
  * The fixtures under `fixtures/payloads/` are the cross-language parity baseline:
- * Swift, TypeScript, and backend ingestion checks consume the same files in later
- * tranches. This test proves the JVM baseline: the registry validates, every
+ * Swift, TypeScript, and backend ingestion checks consume the same files. This test proves the JVM baseline: the registry validates, every
  * fixture decodes with the shared Jackson conventions ([TestMappers]), decode ->
  * encode -> decode is stable, and every `invalid-*` fixture is rejected.
  */
@@ -53,12 +52,12 @@ class PayloadFixtureTest {
     @Test
     fun registryCoversAllDocRequiredFamilies() {
         val required = setOf(
-            "android-sensor-data", "ios-sensorkit-data", "screen-time-usage",
+            "android-sensor-data", "screen-time-usage",
             "device-settings", "battery-telemetry", "interaction-events",
-            "app-audio-activity", "app-audio-content", "ambient-audio", "notification-activity",
+            "app-audio-activity", "app-audio-content", "notification-activity",
             "sleep-events", "activity-recognition", "health-metrics",
-            "connectivity-state", "app-network-usage", "encrypted-payloads",
-            "ios-device", "user-identification",
+            "connectivity-state", "app-network-usage",
+            "ios-device",
         )
         val families = FixtureRegistry.load(repoRoot, knownModuleIds).families.map { it.family }.toSet()
         assertEquals("registry families must match the doc-03 catalog set", required, families)
@@ -201,7 +200,6 @@ class PayloadFixtureTest {
             "interaction_events" to "interaction-events",
             "audio_activity" to "app-audio-activity",
             "audio_content" to "app-audio-content",
-            "ambient_audio" to "ambient-audio",
             "notification_activity" to "notification-activity",
             "sleep" to "sleep-events",
             "activity_recognition" to "activity-recognition",
@@ -209,7 +207,6 @@ class PayloadFixtureTest {
             "connectivity_state" to "connectivity-state",
             "app_network_usage" to "app-network-usage",
             "device_settings" to "device-settings",
-            "user_identification" to "user-identification",
         )
 
         // Documented exceptions: active modules whose payloads do not (yet) have a
@@ -221,6 +218,7 @@ class PayloadFixtureTest {
             "upload_telemetry" to "operational diagnostics only; no backend upload table",
             "sensor_availability" to "device capability snapshot (android_device_sensor_availability); not in the doc-03 fixture catalog",
             "questionnaire" to "survey pipeline, not a collection upload payload",
+            "user_identification" to "device-user choice rides usage events (username); no separate upload envelope",
         )
 
         val activeIds = CollectionModuleId.activeModules.map { it.id }.toSet()

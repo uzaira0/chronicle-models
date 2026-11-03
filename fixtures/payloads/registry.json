@@ -22,25 +22,6 @@
       "notes": "Spans every active sensor_* hardware module; the per-sample sensor field selects the module, so collectionModuleId is null here."
     },
     {
-      "family": "ios-sensorkit-data",
-      "collectionModuleId": null,
-      "payloadSchemaVersion": 1,
-      "jvmClass": "com.openlattice.chronicle.sensorkit.SensorDataSample",
-      "fixtureFiles": [
-        "fixtures/payloads/ios-sensorkit-data/valid.json",
-        "fixtures/payloads/ios-sensorkit-data/invalid-missing-sensor.json"
-      ],
-      "timeSemantics": "dateRecorded/startDate/endDate: OffsetDateTime, ISO-8601 with offset; duration is seconds as a double",
-      "scopingFields": [
-        "studyId",
-        "participantId",
-        "sourceDeviceId"
-      ],
-      "backendHandler": "SensorDataUploadService",
-      "backendTable": "sensor_data",
-      "notes": "iOS SensorKit stream; CollectionModuleId is Android-scoped so no module id applies. data and device are nested JSON strings."
-    },
-    {
       "family": "screen-time-usage",
       "collectionModuleId": null,
       "payloadSchemaVersion": 1,
@@ -55,27 +36,8 @@
         "randomDeviceId"
       ],
       "backendHandler": "ScreenTimeUsageUploadService",
-      "backendTable": "sensor_data",
-      "notes": "Envelope DTO lives in chronicle-server (ScreenTimeUsageEnvelope, StudyV4Controller); the wire shape is produced by chronicle-ios ScreenTimeUsagePayload.swift and ingests as deviceUsage SensorDataSamples."
-    },
-    {
-      "family": "user-identification",
-      "collectionModuleId": "user_identification",
-      "payloadSchemaVersion": 1,
-      "jvmClass": null,
-      "fixtureFiles": [
-        "fixtures/payloads/user-identification/valid.json",
-        "fixtures/payloads/user-identification/invalid-missing-choice.json"
-      ],
-      "timeSemantics": "generatedAt/capturedAt: ISO-8601 UTC with offsets accepted; Swift JSONEncoder emits second-precision UTC",
-      "scopingFields": [
-        "studyId",
-        "participantId",
-        "deviceId"
-      ],
-      "backendHandler": "UserIdentificationUploadService",
-      "backendTable": "sensor_data",
-      "notes": "Envelope DTO lives in chronicle-server and is generated for iOS from chronicle-api; records ingest as deviceUsage SensorDataSamples."
+      "backendTable": "ios_screen_time_usage",
+      "notes": "Envelope DTO lives in chronicle-server (ScreenTimeUsageEnvelope, StudyV4Controller); the wire shape is produced by chronicle-ios ScreenTimeUsagePayload.swift. Each app and web-domain record becomes one ios_screen_time_usage row."
     },
     {
       "family": "device-settings",
@@ -90,7 +52,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "DeviceSettingsUploadService",
       "backendTable": "device_settings"
@@ -108,7 +70,7 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "BatteryTelemetryUploadService",
       "backendTable": "battery_telemetry"
@@ -126,28 +88,10 @@
       "scopingFields": [
         "studyId",
         "participantId",
-        "sourceDeviceId"
+        "sourceRandomDeviceId"
       ],
       "backendHandler": "InteractionEventsUploadService",
       "backendTable": "interaction_events"
-    },
-    {
-      "family": "ambient-audio",
-      "collectionModuleId": "ambient_audio",
-      "payloadSchemaVersion": 1,
-      "jvmClass": "com.openlattice.chronicle.collection.AmbientAudioClassificationEvent",
-      "fixtureFiles": [
-        "fixtures/payloads/ambient-audio/valid.json",
-        "fixtures/payloads/ambient-audio/invalid-confidence-out-of-range.json"
-      ],
-      "timeSemantics": "timestamp: OffsetDateTime, ISO-8601 with offset (window end); windowStartMillis/windowEndMillis bound the listen window; timezone carries the device-local zone id",
-      "scopingFields": [
-        "studyId",
-        "participantId",
-        "sourceDeviceId"
-      ],
-      "backendHandler": "AmbientAudioUploadService",
-      "backendTable": "ambient_audio_events"
     },
     {
       "family": "app-audio-activity",

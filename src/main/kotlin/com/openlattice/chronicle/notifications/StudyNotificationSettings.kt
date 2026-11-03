@@ -21,7 +21,6 @@ public data class StudyNotificationSettings(
     val labFriendlyName: String,
 
     @field:NotNull(message = "Study friendly name is required")
-    @field:Size(max = 255, message = "Study friendly name exceeds maximum length")
     val studyFriendlyName: String,
 
     val notifyResearchers: Boolean = false,
@@ -33,12 +32,6 @@ public data class StudyNotificationSettings(
 
     @field:Valid
     val noDataUploaded: StudyDuration = StudyDuration(days = 1),
-
-    @field:Valid
-    val noTudSubmitted: StudyDuration = StudyDuration(days = 1),
-
-    @field:Valid
-    val noAppUsageSurveySubmitted: StudyDuration = StudyDuration(days = 1)
 ) : StudySetting {
 
     @JsonIgnore

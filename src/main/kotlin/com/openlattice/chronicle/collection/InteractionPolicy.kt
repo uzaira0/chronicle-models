@@ -1,8 +1,7 @@
 package com.openlattice.chronicle.collection
 
 /**
- * Interaction-event policy for the `interaction_events` module
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §3.3 / §6).
+ * Interaction-event policy for the `interaction_events` module.
  *
  * Interaction events are captured via an Accessibility service. By default
  * ([captureElementPosition] = `true`) each event records the raw screen-coordinate bounds of the
@@ -16,7 +15,7 @@ package com.openlattice.chronicle.collection
  * content-freeness is a constructional invariant, not a configurable option, so it
  * is intentionally absent from this DTO.
  *
- * Validation (consistent with [CollectionCadence] / [BatteryPolicy]): the grid must
+ * Validation (consistent with [CollectionCadence]): the grid must
  * have at least one row and one column.
  *
  * Hard constraint: this DTO carries **no** `apiKey`, signing secret, or
@@ -31,17 +30,8 @@ public data class InteractionPolicy(
     public val captureClicks: Boolean = true,
     /** Whether scroll events (direction + magnitude) are recorded. */
     public val captureScrolls: Boolean = true,
-    /**
-     * Legacy wire alias for [captureElementPosition]. It is retained so older clients continue to
-     * honor the same study choice. This does not enable exact pointer capture.
-     */
-    public val captureExactPosition: Boolean = true,
-    /**
-     * Whether raw accessibility-node bounds and their display context are recorded. This is
-     * element geometry, not a finger/touch coordinate. The default follows the legacy
-     * [captureExactPosition] value so old settings payloads retain their behavior.
-     */
-    public val captureElementPosition: Boolean = captureExactPosition,
+    /** Whether raw accessibility-node bounds and their display context are recorded. */
+    public val captureElementPosition: Boolean = true,
 ) {
     init {
         require(gridRows >= 1) {
@@ -49,9 +39,6 @@ public data class InteractionPolicy(
         }
         require(gridCols >= 1) {
             "InteractionPolicy.gridCols must be at least 1: $gridCols"
-        }
-        require(captureElementPosition == captureExactPosition) {
-            "InteractionPolicy position flags must agree while the legacy wire alias is supported"
         }
     }
 

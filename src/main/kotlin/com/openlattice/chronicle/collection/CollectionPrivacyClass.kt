@@ -1,18 +1,15 @@
 package com.openlattice.chronicle.collection
 
 /**
- * Privacy classification for data collection module output (design §1A.4).
+ * Privacy classification for data collection module output.
  *
- * Each class carries a [defaultEnabled] policy that the settings resolver (Phase 3)
+ * Each class carries a [defaultEnabled] policy that the settings resolver
  * uses when no explicit server setting or local preference is present.
  *
- * Hard rule (design §1A.4, refactor plan decisions #15–17): [PHYSICAL_TELEMETRY],
+ * Hard rule: [PHYSICAL_TELEMETRY],
  * [LOCAL_PARTICIPANT_LABEL], [MEDIA_CONTENT], and [INTERACTION_METADATA] are
  * **never** enabled implicitly — their [defaultEnabled] is `false` and only an
  * explicit server setting / preference may flip them.
- *
- * [MEDIA_CONTENT] / [INTERACTION_METADATA] were added by the sensing expansion
- * (see `docs/SENSING-EXPANSION-DESIGN.md`).
  *
  * @author uzaira0
  */
@@ -84,16 +81,6 @@ public enum class CollectionPrivacyClass(
      * the system Health Connect store, never from raw audio/video.
      */
     HEALTH_METRICS(false),
-
-    /**
-     * Ambient-sound classification labels derived ON DEVICE from short, duty-cycled
-     * microphone windows (e.g. Apple SoundAnalysis) — labels + confidences only; the raw
-     * audio is discarded at the classifier boundary and never persisted or uploaded.
-     * The microphone is a distinct sensitivity channel even when only labels leave it
-     * (it can overhear non-consenting third parties), so it is its own tier: opt-in
-     * only, never enabled implicitly. Distinct from [MEDIA_CONTENT], which is mic-free.
-     */
-    AMBIENT_AUDIO_CONTEXT(false),
 
     /**
      * Communication-log metadata — call/SMS counts, direction, timing and duration (never message

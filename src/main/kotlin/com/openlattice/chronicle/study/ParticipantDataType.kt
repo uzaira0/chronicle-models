@@ -5,9 +5,8 @@ package com.openlattice.chronicle.study
  */
 public enum class ParticipantDataType {
     UsageEvents,
-    Preprocessed,
     AppUsageSurvey,
-    IOSSensor,
+    IOSScreenTime,
     AndroidSensor,
     SensorAvailability,
     BatteryTelemetry,
@@ -22,5 +21,4 @@ public enum class ParticipantDataType {
     AppNetworkUsage,
     DeviceSettings,
     UploadDiagnostics,
-    DataQualityAlerts,
 }

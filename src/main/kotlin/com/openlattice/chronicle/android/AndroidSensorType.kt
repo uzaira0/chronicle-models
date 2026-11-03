@@ -13,6 +13,4 @@ public enum class AndroidSensorType {
     significantMotion,
     tiltDetector,
     screenOrientation,
-    samsungGripWifi,
-    samsungMotion
 }

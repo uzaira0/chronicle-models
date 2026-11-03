@@ -3,7 +3,7 @@ package com.openlattice.chronicle.collection
 import com.openlattice.chronicle.android.AndroidSensorSetting
 
 /**
- * Safe default factory for data collection settings (design §1B.4).
+ * Safe default factory for data collection settings.
  *
  * "Safe" means: a missing or invalid setting disables the affected module — it
  * **never** silently enables a privacy-sensitive module. The default `enabled`
@@ -38,9 +38,6 @@ public object CollectionDefaults {
     ): CollectionModuleSetting = CollectionModuleSetting(
         enabled = enabled,
         collectionCadence = CollectionCadence.DEFAULT_COLLECTION,
-        uploadCadence = CollectionCadence.DEFAULT_UPLOAD,
-        batteryPolicy = BatteryPolicy.DEFAULT,
-        networkPolicy = NetworkPolicy.DEFAULT,
         sensorPolicy = SensorCollectionModules.sensorTypeOf(moduleId)?.let {
             AndroidSensorSetting(sensors = setOf(it))
         },

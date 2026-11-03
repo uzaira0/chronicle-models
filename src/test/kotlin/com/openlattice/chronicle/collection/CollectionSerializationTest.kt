@@ -7,6 +7,7 @@ import com.openlattice.chronicle.study.StudySetting
 import com.openlattice.chronicle.study.StudySettingType
 import com.openlattice.chronicle.study.StudySettings
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -14,8 +15,7 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 /**
- * Serialization round-trip and backward-compatibility tests for the Phase 2
- * collection contracts (refactor plan §5.1 steps 16-19 and §5.2).
+ * Serialization round-trip and backward-compatibility tests for the collection contracts.
  */
 class CollectionSerializationTest {
 
@@ -37,34 +37,16 @@ class CollectionSerializationTest {
         assertEquals(c, roundTrip(c, CollectionCadence::class.java))
     }
 
-    @Test fun testBatteryPolicyRoundTrip() {
-        val b = BatteryPolicy(minLevelPercent = 25, stopBelowCriticalPercent = 8, degradeInPowerSave = false)
-        assertEquals(b, roundTrip(b, BatteryPolicy::class.java))
-    }
-
-    @Test fun testNetworkPolicyRoundTrip() {
-        val n = NetworkPolicy(requireUnmetered = true, requireConnected = true)
-        assertEquals(n, roundTrip(n, NetworkPolicy::class.java))
-    }
-
     @Test fun testInteractionPolicyRoundTrip() {
         val p = InteractionPolicy(
             gridRows = 6,
             gridCols = 4,
             captureClicks = true,
             captureScrolls = false,
-            captureExactPosition = false,
+            captureElementPosition = false,
         )
         assertEquals(p, roundTrip(p, InteractionPolicy::class.java))
-    }
-
-    @Test fun testLegacyInteractionPolicyUsesExactFlagAsElementBoundsAlias() {
-        val restored = json.readValue(
-            """{"gridRows":4,"gridCols":3,"captureExactPosition":false}""",
-            InteractionPolicy::class.java,
-        )
-        assertFalse(restored.captureExactPosition)
-        assertFalse(restored.captureElementPosition)
+        assertEquals(5, json.readTree(json.writeValueAsString(p)).size())
     }
 
     @Test fun testInteractionEventRoundTrip() {
@@ -373,7 +355,7 @@ class CollectionSerializationTest {
     }
 
     @Test fun testRemovedCapturePolicyIsIgnoredAndNeverPublished() {
-        val legacyPayload = """{
+        val removedPolicyPayload = """{
             "enabled":true,
             "audioCapturePolicy":{
                 "captureWindowSeconds":30,
@@ -384,7 +366,7 @@ class CollectionSerializationTest {
             }
         }""".trimIndent()
 
-        val decoded = json.readValue(legacyPayload, CollectionModuleSetting::class.java)
+        val decoded = json.readValue(removedPolicyPayload, CollectionModuleSetting::class.java)
         assertTrue(decoded.enabled)
 
         val constructed = CollectionModuleSetting(enabled = true)
@@ -394,27 +376,11 @@ class CollectionSerializationTest {
         assertTrue(json.readValue(serialized, CollectionModuleSetting::class.java).enabled)
     }
 
-    @Test fun testDisabledModuleSettingCarriesDispositionThroughRoundTrip() {
-        val s = CollectionModuleSetting(
-            enabled = false,
-            disableDisposition = CollectionDataDisposition.DISCARD_AND_STOP,
-        )
-        val restored = roundTrip(s, CollectionModuleSetting::class.java)
-        assertEquals(s, restored)
-        assertEquals(CollectionDataDisposition.DISCARD_AND_STOP, restored.disableDisposition)
-    }
-
-    @Test fun testDispositionSerializesAsStableWireString() {
-        val text = json.writeValueAsString(CollectionDataDisposition.HOLD_PENDING)
-        assertEquals("\"hold_pending\"", text)
-    }
-
-    @Test fun testUnknownDispositionRejectedDuringDeserialization() {
-        val payload = """{"enabled":false,"disableDisposition":"not_a_real_disposition"}"""
-        try {
-            json.readValue(payload, CollectionModuleSetting::class.java)
-            org.junit.Assert.fail("Expected failure decoding an unknown disposition")
-        } catch (expected: Exception) { /* expected */ }
+    /** Settings stored before the disposition was retired still decode; the stale field is ignored. */
+    @Test fun testRetiredDispositionAndUploadPolicyFieldsAreIgnored() {
+        val payload = """{"enabled":false,"disableDisposition":"discard_and_stop","uploadCadence":{"intervalSeconds":60},
+            "batteryPolicy":{"minLevelPercent":200},"networkPolicy":{"requireUnmetered":true}}"""
+        assertEquals(CollectionModuleSetting(enabled = false), json.readValue(payload, CollectionModuleSetting::class.java))
     }
 
     @Test fun testCollectionAcknowledgmentRoundTrip() {
@@ -438,7 +404,7 @@ class CollectionSerializationTest {
             id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
             studyId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
             participantId = "participant-1",
-            sourceDeviceId = "device-1",
+            sourceRandomDeviceId = "device-1",
             acknowledgedModules = setOf(CollectionModuleId.USAGE_EVENTS),
             acknowledgedAt = OffsetDateTime.parse("2026-06-04T12:00:00Z"),
             unavailableModules = setOf(CollectionModuleId.SENSOR_GYROSCOPE),
@@ -466,7 +432,7 @@ class CollectionSerializationTest {
         assertTrue(restored.required)
     }
 
-    @Test fun testModuleSettingRequiredDefaultsFalseForLegacyPayload() {
+    @Test fun testModuleSettingRequiredDefaultsFalseWhenOmitted() {
         val restored = json.readValue("""{"enabled":true}""", CollectionModuleSetting::class.java)
         assertFalse("a payload without `required` is optional", restored.required)
     }
@@ -481,9 +447,9 @@ class CollectionSerializationTest {
         assertEquals(ack, roundTrip(ack, CollectionAcknowledgment::class.java))
     }
 
-    @Test fun testAcknowledgmentLegacyPayloadDefaultsDeclinedEmptyAndTriggerEnrollment() {
-        val legacy = """{"acknowledgedModules":["usage_events"],"acknowledgedAt":"2026-06-10T12:00:00Z"}"""
-        val restored = json.readValue(legacy, CollectionAcknowledgment::class.java)
+    @Test fun testAcknowledgmentOmittedOptionalFieldsUseEnrollmentDefaults() {
+        val fixture = """{"acknowledgedModules":["usage_events"],"acknowledgedAt":"2026-06-10T12:00:00Z"}"""
+        val restored = json.readValue(fixture, CollectionAcknowledgment::class.java)
         assertTrue(restored.declinedModules.isEmpty())
         assertTrue(restored.unavailableModules.isEmpty())
         assertEquals(ConsentTrigger.ENROLLMENT, restored.trigger)
@@ -494,7 +460,7 @@ class CollectionSerializationTest {
             id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
             studyId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
             participantId = "p-1",
-            sourceDeviceId = "d-1",
+            sourceRandomDeviceId = "d-1",
             acknowledgedModules = setOf(CollectionModuleId.USAGE_EVENTS),
             acknowledgedAt = OffsetDateTime.parse("2026-06-10T12:00:00Z"),
             declinedModules = setOf(CollectionModuleId.SENSOR_LIGHT),
@@ -514,19 +480,7 @@ class CollectionSerializationTest {
         assertEquals(ack, roundTrip(ack, CollectionAcknowledgment::class.java))
     }
 
-    @Test fun testDiagnosticsRoundTrip() {
-        val d = CollectionModuleDiagnostics(
-            moduleId = CollectionModuleId.UPLOAD_TELEMETRY,
-            privacyClass = CollectionPrivacyClass.OPERATIONAL_DIAGNOSTICS,
-            lastRunEpochMs = 1_700_000_000_000L,
-            lastResult = "OK",
-            itemsCollected = 12,
-            queueDepth = 3,
-            redactedParticipantRef = "a1b2c3",
-            notTracked = setOf("replayCount"),
-        )
-        assertEquals(d, roundTrip(d, CollectionModuleDiagnostics::class.java))
-    }
+    
 
     @Test fun testAggregateRoundTrip() {
         val setting = CollectionDefaults.androidDataCollectionSetting()
@@ -534,11 +488,17 @@ class CollectionSerializationTest {
     }
 
     @Test fun testModuleIdSerializesAsStableString() {
-        val text = json.writeValueAsString(CollectionModuleId.HARDWARE_SENSORS)
-        assertEquals("\"hardware_sensors\"", text)
+        val text = json.writeValueAsString(CollectionModuleId.SENSOR_ACCELEROMETER)
+        assertEquals(json.writeValueAsString(CollectionModuleId.SENSOR_ACCELEROMETER.id), text)
     }
 
     // ===== Polymorphic StudySetting (de)serialization =====
+
+    @Test fun testDataCollectionRejectsADeviceWideSensorPolicy() {
+        assertThrows(IllegalArgumentException::class.java) {
+            StudySettings(mapOf(StudySettingType.DataCollection to AndroidSensorSetting.NO_SENSORS))
+        }
+    }
 
     @Test fun testAggregateRoundTripsAsPolymorphicStudySetting() {
         val original: StudySetting = CollectionDefaults.androidDataCollectionSetting()
@@ -561,65 +521,21 @@ class CollectionSerializationTest {
         assertEquals(settings, restored)
     }
 
-    // ===== Legacy AndroidSensorSetting compatibility (refactor plan §5.2 step 1) =====
+    // ===== Per-module sensor policy =====
 
-    @Test fun testLegacyAndroidSensorSettingJsonStillRoundTripsUnchanged() {
-        val legacy = AndroidSensorSetting(
+    @Test fun testSensorPolicyJsonRoundTrips() {
+        val fixture = AndroidSensorSetting(
             sensors = setOf(AndroidSensorType.accelerometer, AndroidSensorType.gyroscope),
             samplingRateHz = 10,
             dutyCycleActiveSeconds = 20,
             dutyCyclePeriodSeconds = 200,
         )
-        val text = json.writeValueAsString(legacy)
-        assertEquals(legacy, json.readValue(text, AndroidSensorSetting::class.java))
+        val text = json.writeValueAsString(fixture)
+        assertEquals(fixture, json.readValue(text, AndroidSensorSetting::class.java))
     }
 
-    @Test fun testLegacyAndroidSensorSettingRoundTripsAsPolymorphicStudySetting() {
-        val legacy: StudySetting = AndroidSensorSetting(sensors = setOf(AndroidSensorType.light))
-        val text = json.writeValueAsString(legacy)
-        assertTrue(text.contains(AndroidSensorSetting::class.java.name))
-        assertEquals(legacy, json.readValue(text, StudySetting::class.java))
-    }
 
-    @Test fun testStudySettingsWithLegacyAndroidSensorRoundTrips() {
-        val settings = StudySettings(
-            mapOf(StudySettingType.AndroidSensor to AndroidSensorSetting.NO_SENSORS),
-        )
-        val text = json.writeValueAsString(settings)
-        val restored = json.readValue(text, object : TypeReference<StudySettings>() {})
-        assertEquals(settings, restored)
-    }
-
-    // ===== Legacy bridge fallback (refactor plan §5.2 steps 3-5) =====
-
-    @Test fun testEmptyLegacySensorSettingBridgesToNoSensorModules() {
-        val bridged = AndroidDataCollectionSetting.fromLegacy(AndroidSensorSetting.NO_SENSORS)
-        assertTrue(bridged.modules.isEmpty())
-    }
-
-    @Test fun testNonEmptyLegacySensorSettingBridgesToThePerSensorModuleOnly() {
-        val legacy = AndroidSensorSetting(sensors = setOf(AndroidSensorType.proximity))
-        val bridged = AndroidDataCollectionSetting.fromLegacy(legacy)
-        assertEquals(setOf(CollectionModuleId.SENSOR_PROXIMITY), bridged.modules.keys)
-        assertTrue(bridged.modules.getValue(CollectionModuleId.SENSOR_PROXIMITY).enabled)
-    }
-
-    @Test fun testMissingDataCollectionFallsBackToLegacyAndroidSensor() {
-        // Simulates resolver fallback order: no DataCollection setting present,
-        // a legacy AndroidSensor setting is, so the bridge derives the aggregate.
-        val studySettings = StudySettings(
-            mapOf(
-                StudySettingType.AndroidSensor to
-                    AndroidSensorSetting(sensors = setOf(AndroidSensorType.accelerometer)),
-            ),
-        )
-        val dataCollection = studySettings[StudySettingType.DataCollection] as? AndroidDataCollectionSetting
-        val legacy = studySettings[StudySettingType.AndroidSensor] as? AndroidSensorSetting
-        val resolved = dataCollection ?: AndroidDataCollectionSetting.fromLegacy(legacy)
-        assertTrue(resolved.modules.getValue(CollectionModuleId.SENSOR_ACCELEROMETER).enabled)
-    }
-
-    // ===== Tolerant deserialization (refactor plan §5.2 steps 11-12) =====
+    // ===== Tolerant deserialization =====
 
     @Test fun testUnknownModuleIdDoesNotCrashDeserialization() {
         val payload = """
@@ -677,58 +593,41 @@ class CollectionSerializationTest {
 
     // ===== Validation surfaces through deserialization =====
 
-    @Test(expected = Exception::class)
+    @Test
     fun testNegativeCadenceRejectedDuringDeserialization() {
         val payload = """{"intervalSeconds":-1,"jitterSeconds":0}"""
-        json.readValue(payload, CollectionCadence::class.java)
+        assertThrows(Exception::class.java) {
+            json.readValue(payload, CollectionCadence::class.java)
+        }
     }
 
-    @Test(expected = Exception::class)
-    fun testOutOfRangeBatteryPolicyRejectedDuringDeserialization() {
-        val payload = """{"minLevelPercent":200,"stopBelowCriticalPercent":5,"degradeInPowerSave":true}"""
-        json.readValue(payload, BatteryPolicy::class.java)
-    }
-
-    @Test(expected = Exception::class)
+    @Test
     fun testNegativeSamplingRateRejectedDuringDeserialization() {
         val payload = """
             {"enabled":true,"sensorPolicy":{"sensors":[],"samplingRateHz":-10,
             "dutyCycleActiveSeconds":30,"dutyCyclePeriodSeconds":300}}
         """.trimIndent()
-        json.readValue(payload, CollectionModuleSetting::class.java)
+        assertThrows(Exception::class.java) {
+            json.readValue(payload, CollectionModuleSetting::class.java)
+        }
     }
 
-    @Test(expected = Exception::class)
+    @Test
     fun testDutyActiveExceedingPeriodRejectedDuringDeserialization() {
         val payload = """
             {"enabled":true,"sensorPolicy":{"sensors":[],"samplingRateHz":5,
             "dutyCycleActiveSeconds":500,"dutyCyclePeriodSeconds":300}}
         """.trimIndent()
-        json.readValue(payload, CollectionModuleSetting::class.java)
+        assertThrows(Exception::class.java) {
+            json.readValue(payload, CollectionModuleSetting::class.java)
+        }
     }
 
-    @Test(expected = Exception::class)
-    fun testMissingPrivacyClassRejectedDuringDeserialization() {
-        // privacyClass is a non-null property with no default — omitting it must fail.
-        val payload = """{"moduleId":"upload_telemetry","itemsCollected":0}"""
-        json.readValue(payload, CollectionModuleDiagnostics::class.java)
-    }
+    
 
-    // ===== Secret-leakage guards (refactor plan §5.2 steps 17-18) =====
+    // ===== Secret-leakage guards =====
 
-    @Test fun testDiagnosticsNeverSerializeSecretFields() {
-        val d = CollectionModuleDiagnostics(
-            moduleId = CollectionModuleId.UPLOAD_TELEMETRY,
-            privacyClass = CollectionPrivacyClass.OPERATIONAL_DIAGNOSTICS,
-            redactedParticipantRef = "hash-abcdef",
-        )
-        val text = json.writeValueAsString(d).lowercase()
-        assertFalse(text.contains("apikey"))
-        assertFalse(text.contains("mobile_signing_secret"))
-        assertFalse(text.contains("signingsecret"))
-        // Only a redacted reference field exists; there is no raw participantId field.
-        assertFalse(text.contains("\"participantid\""))
-    }
+    
 
     @Test fun testSettingDtosNeverSerializeSecretFields() {
         val setting = CollectionDefaults.androidDataCollectionSetting()

@@ -6,8 +6,6 @@ import com.openlattice.chronicle.authorization.AbstractSecurableObject
 import com.openlattice.chronicle.authorization.SecurableObjectType
 import com.openlattice.chronicle.ids.IdConstants
 import com.openlattice.chronicle.notifications.StudyNotificationSettings
-import com.openlattice.chronicle.sensorkit.SensorSetting
-import com.openlattice.chronicle.sensorkit.SensorType
 import com.openlattice.chronicle.storage.ChronicleStorage
 import com.openlattice.chronicle.survey.SurveySettings
 import com.openlattice.chronicle.timeusediary.TimeUseDiarySettings
@@ -63,8 +61,6 @@ public class Study(
 
     public val organizationIds: Set<UUID> = setOf(),
 
-    public val notificationsEnabled: Boolean = false,
-
     @field:Size(max = 36, message = "Storage name exceeds maximum length")
     @field:Pattern(regexp = "^[a-zA-Z]+$", message = "Storage name must contain only alphabetic characters")
     public var storage: String = ChronicleStorage.CHRONICLE.id,
@@ -92,7 +88,6 @@ public class Study(
             version: String = "",
             contact: String,
             organizationIds: Set<UUID> = setOf(),
-            notificationsEnabled: Boolean = false,
             storage: String = ChronicleStorage.CHRONICLE.id,
             settings: StudySettings = initialSettings(title),
             modules: Map<StudyFeature, Any> = mapOf(),
@@ -106,7 +101,6 @@ public class Study(
             version = version,
             contact = contact,
             organizationIds = organizationIds,
-            notificationsEnabled = notificationsEnabled,
             storage = storage,
             settings = settings,
             modules = modules,
@@ -136,10 +130,6 @@ public class Study(
         }
     }
 
-    public fun retrieveConfiguredSensors(): Set<SensorType> {
-        return (settings[StudySettingType.Sensor] as SensorSetting? ?: SensorSetting(setOf()))
-    }
-
     @JsonIgnore //Required so that jackson will ignore, but still accessible from Hazelcast for indexing.
     public fun getNotifyResearchers(): Boolean {
         return (settings[StudySettingType.Notifications] as StudyNotificationSettings? ?: StudyNotificationSettings(
@@ -163,7 +153,6 @@ public class Study(
         if (version != other.version) return false
         if (contact != other.contact) return false
         if (organizationIds != other.organizationIds) return false
-        if (notificationsEnabled != other.notificationsEnabled) return false
         if (storage != other.storage) return false
         if (settings != other.settings) return false
         if (modules != other.modules) return false
@@ -185,7 +174,6 @@ public class Study(
         result = 31 * result + version.hashCode()
         result = 31 * result + contact.hashCode()
         result = 31 * result + organizationIds.hashCode()
-        result = 31 * result + notificationsEnabled.hashCode()
         result = 31 * result + storage.hashCode()
         result = 31 * result + settings.hashCode()
         result = 31 * result + modules.hashCode()
@@ -195,8 +183,7 @@ public class Study(
     }
 
     override fun toString(): String {
-        return "Study(createdAt=$createdAt, updatedAt=$updatedAt, startedAt=$startedAt, endedAt=$endedAt, lat=$lat, lon=$lon, group='$group', version='$version', contact='$contact', organizationIds=$organizationIds, notificationsEnabled=$notificationsEnabled, storage='$storage', settings=$settings, modules=$modules, phoneNumber='$phoneNumber', category=$category)"
+        return "Study(createdAt=$createdAt, updatedAt=$updatedAt, startedAt=$startedAt, endedAt=$endedAt, lat=$lat, lon=$lon, group='$group', version='$version', contact='$contact', organizationIds=$organizationIds, storage='$storage', settings=$settings, modules=$modules, phoneNumber='$phoneNumber', category=$category)"
     }
 
 }
-

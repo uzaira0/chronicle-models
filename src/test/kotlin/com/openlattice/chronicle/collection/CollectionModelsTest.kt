@@ -12,7 +12,7 @@ import org.junit.Test
 import java.time.OffsetDateTime
 
 /**
- * Model unit tests for the Phase 2 data collection contracts (refactor plan §5.1).
+ * Model unit tests for the data collection contracts.
  */
 @Suppress("DEPRECATION")
 class CollectionModelsTest {
@@ -20,12 +20,10 @@ class CollectionModelsTest {
     // ===== CollectionModuleId =====
 
     @Test fun testActiveModuleIdCount() {
-        // 19 non-sensor active modules (the prior 12 — incl. interaction_events + in_app_activity_class
-        // + the app-audio pair + notification_activity — plus the 6 sensing-expansion modules: sleep,
-        // activity_recognition, health_connect, connectivity_state, app_network_usage, device_settings —
-        // plus ambient_audio, the iOS SoundAnalysis on-device sound-classification module)
-        // + 12 per-sensor modules (hardware_sensors + the 2 Samsung vendor sensors are decode-only).
-        assertEquals(31, CollectionModuleId.activeModules.size)
+        // 18 non-sensor active modules (including the 6 sensing-expansion modules: sleep,
+        // activity_recognition, health_connect, connectivity_state, app_network_usage, device_settings)
+        // + 12 per-sensor modules.
+        assertEquals(30, CollectionModuleId.activeModules.size)
     }
 
     @Test fun testActiveModuleIdStrings() {
@@ -35,7 +33,7 @@ class CollectionModelsTest {
                 "usage_events", "device_lifecycle",
                 "user_identification", "upload_telemetry", "sensor_availability",
                 "questionnaire", "battery_telemetry", "interaction_events", "in_app_activity_class",
-                "audio_activity", "audio_content", "notification_activity", "ambient_audio",
+                "audio_activity", "audio_content", "notification_activity",
                 "sleep", "activity_recognition", "health_connect",
                 "connectivity_state", "app_network_usage", "device_settings",
                 "sensor_accelerometer", "sensor_gyroscope", "sensor_magnetometer",
@@ -45,27 +43,6 @@ class CollectionModelsTest {
             ),
             ids,
         )
-    }
-
-    @Test fun testHardwareSensorsRetiredToDecodeAlias() {
-        // The umbrella is split into per-sensor modules; it survives only as a decode alias.
-        assertFalse(CollectionModuleId.HARDWARE_SENSORS.active)
-        assertEquals(CollectionModuleId.HARDWARE_SENSORS, CollectionModuleId.fromId("hardware_sensors"))
-    }
-
-    @Test fun testSamsungSensorsRetiredToDecodeAlias() {
-        // The Samsung vendor sensors are non-portable + uninterpretable for research: retired to
-        // decode-only aliases. Inactive, absent from the collectable set, but still decode and are
-        // still classified as sensor modules (for legacy routing / per-sensor-config detection).
-        listOf(CollectionModuleId.SENSOR_SAMSUNG_GRIP_WIFI, CollectionModuleId.SENSOR_SAMSUNG_MOTION)
-            .forEach { retired ->
-                assertFalse("$retired must be inactive", retired.active)
-                assertEquals(retired, CollectionModuleId.fromId(retired.id))
-                assertTrue("$retired still classified as a sensor module", SensorCollectionModules.isSensorModule(retired))
-                assertFalse("$retired excluded from the collectable set", retired in SensorCollectionModules.sensorModuleIds)
-                assertFalse("$retired excluded from the display order", retired in SensorCollectionModules.sensorDisplayOrder)
-                assertTrue("$retired retained in the decode set", retired in SensorCollectionModules.allSensorModuleIds)
-            }
     }
 
     @Test fun testEverySensorTypeHasAModuleAndActiveSetExcludesRetired() {
@@ -78,8 +55,7 @@ class CollectionModelsTest {
         }
         // The decode set is total over the sensor catalog; the collectable set drops the 2 retired
         // Samsung vendor sensors.
-        assertEquals(AndroidSensorType.entries.size, SensorCollectionModules.allSensorModuleIds.size)
-        assertEquals(AndroidSensorType.entries.size - 2, SensorCollectionModules.sensorModuleIds.size)
+        assertEquals(AndroidSensorType.entries.size, SensorCollectionModules.sensorModuleIds.size)
         SensorCollectionModules.sensorModuleIds.forEach { assertTrue("$it must be active", it.active) }
     }
 
@@ -94,16 +70,6 @@ class CollectionModelsTest {
             ),
         )
         assertTrue(perSensor.hasAnySensorModule())
-
-        // Even a legacy config whose only sensor key is a RETIRED Samsung module still counts as a
-        // per-sensor config (isSensorModule is total) → legacy bridge stays suppressed.
-        val retiredOnly = AndroidDataCollectionSetting(
-            modules = mapOf(
-                CollectionModuleId.SENSOR_SAMSUNG_GRIP_WIFI to
-                    CollectionDefaults.moduleSetting(CollectionModuleId.SENSOR_SAMSUNG_GRIP_WIFI),
-            ),
-        )
-        assertTrue(retiredOnly.hasAnySensorModule())
 
         // Only non-sensor modules (or empty) → un-migrated; the legacy bridge still applies.
         val nonSensorOnly = AndroidDataCollectionSetting(
@@ -152,7 +118,7 @@ class CollectionModelsTest {
     }
 
     @Test fun testInteractionEventsIsActive() {
-        // Sensing-expansion Feature C: interaction_events is now a live, content-free module.
+        // interaction_events is a live, content-free module.
         assertTrue(CollectionModuleId.INTERACTION_EVENTS.active)
         assertEquals("interaction_events", CollectionModuleId.INTERACTION_EVENTS.id)
     }
@@ -212,7 +178,7 @@ class CollectionModelsTest {
     }
 
     @Test fun testFromIdKnown() {
-        assertEquals(CollectionModuleId.HARDWARE_SENSORS, CollectionModuleId.fromId("hardware_sensors"))
+        assertEquals(CollectionModuleId.SENSOR_ACCELEROMETER, CollectionModuleId.fromId(CollectionModuleId.SENSOR_ACCELEROMETER.id))
     }
 
     @Test fun testFromIdUnknownThrows() {
@@ -223,14 +189,14 @@ class CollectionModelsTest {
     }
 
     @Test fun testModuleIdCarriesPrivacyClass() {
-        assertEquals(CollectionPrivacyClass.PHYSICAL_TELEMETRY, CollectionModuleId.HARDWARE_SENSORS.privacyClass)
+        assertEquals(CollectionPrivacyClass.PHYSICAL_TELEMETRY, CollectionModuleId.SENSOR_ACCELEROMETER.privacyClass)
         assertEquals(CollectionPrivacyClass.BEHAVIORAL_METADATA, CollectionModuleId.USAGE_EVENTS.privacyClass)
     }
 
     // ===== CollectionPrivacyClass =====
 
     @Test fun testPrivacyClassCount() {
-        assertEquals(14, CollectionPrivacyClass.entries.size)
+        assertEquals(13, CollectionPrivacyClass.entries.size)
     }
 
     @Test fun testGazeAndContentClassesNotEnabledByDefault() {
@@ -238,7 +204,6 @@ class CollectionModelsTest {
         assertFalse(CollectionPrivacyClass.SCREEN_CONTENT.defaultEnabled)
         assertFalse(CollectionPrivacyClass.PRECISE_LOCATION.defaultEnabled)
         assertFalse(CollectionPrivacyClass.HEALTH_METRICS.defaultEnabled)
-        assertFalse(CollectionPrivacyClass.AMBIENT_AUDIO_CONTEXT.defaultEnabled)
         assertFalse(CollectionPrivacyClass.COMMUNICATION_METADATA.defaultEnabled)
     }
 
@@ -305,52 +270,11 @@ class CollectionModelsTest {
         assertEquals(CollectionCadence(60L, 5L), CollectionCadence(60L, 5L))
     }
 
-    // ===== BatteryPolicy =====
-
-    @Test fun testBatteryPolicyDefaults() {
-        val b = BatteryPolicy()
-        assertEquals(15, b.minLevelPercent)
-        assertEquals(5, b.stopBelowCriticalPercent)
-        assertTrue(b.degradeInPowerSave)
-    }
-
-    @Test fun testBatteryPolicyOutOfRangeMinRejected() {
-        try {
-            BatteryPolicy(minLevelPercent = 101)
-            fail("Expected rejection of out-of-range minLevelPercent")
-        } catch (e: IllegalArgumentException) { /* expected */ }
-    }
-
-    @Test fun testBatteryPolicyNegativeCriticalRejected() {
-        try {
-            BatteryPolicy(stopBelowCriticalPercent = -1)
-            fail("Expected rejection of negative critical percent")
-        } catch (e: IllegalArgumentException) { /* expected */ }
-    }
-
-    @Test fun testBatteryPolicyCriticalAboveMinRejected() {
-        try {
-            BatteryPolicy(minLevelPercent = 10, stopBelowCriticalPercent = 20)
-            fail("Expected rejection of critical above minimum")
-        } catch (e: IllegalArgumentException) { /* expected */ }
-    }
-
-    // ===== NetworkPolicy =====
-
-    @Test fun testNetworkPolicyDefaults() {
-        val n = NetworkPolicy()
-        assertFalse(n.requireUnmetered)
-        assertTrue(n.requireConnected)
-    }
-
     // ===== CollectionModuleSetting =====
 
     @Test fun testModuleSettingDefaults() {
         val s = CollectionModuleSetting(enabled = true)
         assertEquals(CollectionCadence.DEFAULT_COLLECTION, s.collectionCadence)
-        assertEquals(CollectionCadence.DEFAULT_UPLOAD, s.uploadCadence)
-        assertEquals(BatteryPolicy.DEFAULT, s.batteryPolicy)
-        assertEquals(NetworkPolicy.DEFAULT, s.networkPolicy)
         assertNull(s.sensorPolicy)
     }
 
@@ -412,44 +336,10 @@ class CollectionModelsTest {
         } catch (e: IllegalArgumentException) { /* expected */ }
     }
 
-    // ===== CollectionModuleDiagnostics =====
-
-    @Test fun testDiagnosticsDefaults() {
-        val d = CollectionModuleDiagnostics(
-            moduleId = CollectionModuleId.UPLOAD_TELEMETRY,
-            privacyClass = CollectionPrivacyClass.OPERATIONAL_DIAGNOSTICS,
-        )
-        assertNull(d.lastRunEpochMs)
-        assertNull(d.lastResult)
-        assertEquals(0, d.itemsCollected)
-        assertEquals(0, d.queueDepth)
-        assertNull(d.lastError)
-        assertNull(d.redactedParticipantRef)
-        assertTrue(d.notTracked.isEmpty())
-    }
-
-    @Test fun testDiagnosticsMismatchedPrivacyClassRejected() {
-        try {
-            CollectionModuleDiagnostics(
-                moduleId = CollectionModuleId.HARDWARE_SENSORS,
-                privacyClass = CollectionPrivacyClass.BEHAVIORAL_METADATA,
-            )
-            fail("Expected rejection of mismatched privacy class")
-        } catch (e: IllegalArgumentException) { /* expected */ }
-    }
-
-    @Test fun testDiagnosticsToString() {
-        val d = CollectionModuleDiagnostics(
-            moduleId = CollectionModuleId.UPLOAD_TELEMETRY,
-            privacyClass = CollectionPrivacyClass.OPERATIONAL_DIAGNOSTICS,
-        )
-        assertNotNull(d.toString())
-    }
-
     // ===== CollectionDefaults =====
 
     @Test fun testDefaultsDisablePrivacySensitiveModules() {
-        assertFalse(CollectionDefaults.defaultEnabled(CollectionModuleId.HARDWARE_SENSORS))
+        assertFalse(CollectionDefaults.defaultEnabled(CollectionModuleId.SENSOR_ACCELEROMETER))
         assertFalse(CollectionDefaults.defaultEnabled(CollectionModuleId.USER_IDENTIFICATION))
     }
 
@@ -510,7 +400,7 @@ class CollectionModelsTest {
     }
 
     @Test fun testModuleSettingFactoryRespectsExplicitEnabled() {
-        val s = CollectionDefaults.moduleSetting(CollectionModuleId.HARDWARE_SENSORS, enabled = true)
+        val s = CollectionDefaults.moduleSetting(CollectionModuleId.SENSOR_ACCELEROMETER, enabled = true)
         assertTrue(s.enabled)
     }
 
@@ -518,53 +408,6 @@ class CollectionModelsTest {
 
     @Test fun testAggregateDefaultVersion() {
         assertEquals(AndroidDataCollectionSetting.CURRENT_VERSION, AndroidDataCollectionSetting().version)
-    }
-
-    @Test fun testFromLegacyNullEnablesNoSensorModules() {
-        val setting = AndroidDataCollectionSetting.fromLegacy(null)
-        assertTrue(setting.modules.isEmpty())
-    }
-
-    @Test fun testFromLegacyEmptyEnablesNoSensorModules() {
-        val setting = AndroidDataCollectionSetting.fromLegacy(AndroidSensorSetting.NO_SENSORS)
-        assertTrue(setting.modules.isEmpty())
-    }
-
-    @Test fun testFromLegacyNonEmptyEnablesThePerSensorModule() {
-        val legacy = AndroidSensorSetting(sensors = setOf(AndroidSensorType.accelerometer))
-        val setting = AndroidDataCollectionSetting.fromLegacy(legacy)
-        assertEquals(setOf(CollectionModuleId.SENSOR_ACCELEROMETER), setting.modules.keys)
-        assertTrue(setting.modules.getValue(CollectionModuleId.SENSOR_ACCELEROMETER).enabled)
-    }
-
-    @Test fun testFromLegacyEnablesOnePerSensorModulePerSensor() {
-        val legacy = AndroidSensorSetting(
-            sensors = setOf(AndroidSensorType.accelerometer, AndroidSensorType.light),
-        )
-        val setting = AndroidDataCollectionSetting.fromLegacy(legacy)
-        assertEquals(
-            setOf(CollectionModuleId.SENSOR_ACCELEROMETER, CollectionModuleId.SENSOR_LIGHT),
-            setting.modules.keys,
-        )
-    }
-
-    @Test fun testFromLegacyCarriesSamplingRateOntoEachSensorModule() {
-        val legacy = AndroidSensorSetting(sensors = setOf(AndroidSensorType.gyroscope), samplingRateHz = 25)
-        val setting = AndroidDataCollectionSetting.fromLegacy(legacy)
-        val policy = setting.modules.getValue(CollectionModuleId.SENSOR_GYROSCOPE).sensorPolicy
-        assertNotNull(policy)
-        assertEquals(25, policy!!.samplingRateHz)
-        assertEquals(setOf(AndroidSensorType.gyroscope), policy.sensors)
-    }
-
-    @Test fun testFromLegacyDropsRetiredSensorsAndKeepsActiveOnes() {
-        // A legacy blob listing a retired Samsung sensor alongside an active one bridges ONLY the
-        // active sensor — retired modules are never re-enabled by the legacy bridge.
-        val legacy = AndroidSensorSetting(
-            sensors = setOf(AndroidSensorType.samsungGripWifi, AndroidSensorType.light),
-        )
-        val setting = AndroidDataCollectionSetting.fromLegacy(legacy)
-        assertEquals(setOf(CollectionModuleId.SENSOR_LIGHT), setting.modules.keys)
     }
 
     // ===== InteractionPolicy (sensing expansion) =====
@@ -577,12 +420,12 @@ class CollectionModelsTest {
         assertTrue(i.captureScrolls)
         // Raw accessibility-element bounds are captured by default; the old flag is an alias.
         assertTrue(i.captureElementPosition)
-        assertTrue(i.captureExactPosition)
+        assertTrue(i.captureElementPosition)
     }
 
     @Test fun testInteractionPolicyExactPositionOptOut() {
-        val coarseOnly = InteractionPolicy(captureExactPosition = false)
-        assertFalse(coarseOnly.captureExactPosition)
+        val coarseOnly = InteractionPolicy(captureElementPosition = false)
+        assertFalse(coarseOnly.captureElementPosition)
         assertFalse(coarseOnly.captureElementPosition)
         // Opting out of element bounds leaves the legacy coarse grid intact.
         assertEquals(4, coarseOnly.gridRows)
@@ -613,50 +456,6 @@ class CollectionModelsTest {
     @Test fun testModuleSettingCarriesInteractionPolicy() {
         val s = CollectionModuleSetting(enabled = true, interactionPolicy = InteractionPolicy.DEFAULT)
         assertNotNull(s.interactionPolicy)
-    }
-
-    // ===== CollectionDataDisposition (collection loop closure) =====
-
-    @Test fun testDispositionWireIds() {
-        assertEquals("flush_then_stop", CollectionDataDisposition.FLUSH_THEN_STOP.id)
-        assertEquals("discard_and_stop", CollectionDataDisposition.DISCARD_AND_STOP.id)
-        assertEquals("hold_pending", CollectionDataDisposition.HOLD_PENDING.id)
-    }
-
-    @Test fun testDispositionWireIdsAreUnique() {
-        val ids = CollectionDataDisposition.entries.map { it.id }
-        assertEquals(ids.size, ids.toSet().size)
-    }
-
-    @Test fun testDispositionFromIdKnown() {
-        assertEquals(
-            CollectionDataDisposition.HOLD_PENDING,
-            CollectionDataDisposition.fromId("hold_pending"),
-        )
-    }
-
-    @Test fun testDispositionFromIdOrNullUnknownReturnsNull() {
-        assertNull(CollectionDataDisposition.fromIdOrNull("does_not_exist"))
-    }
-
-    @Test fun testDispositionFromIdUnknownThrows() {
-        try {
-            CollectionDataDisposition.fromId("does_not_exist")
-            fail("Expected IllegalArgumentException for unknown disposition id")
-        } catch (e: IllegalArgumentException) { /* expected */ }
-    }
-
-    @Test fun testModuleSettingDisableDispositionDefaultsNull() {
-        // An enabled module never carries a disposition.
-        assertNull(CollectionModuleSetting(enabled = true).disableDisposition)
-    }
-
-    @Test fun testModuleSettingCarriesDisableDisposition() {
-        val s = CollectionModuleSetting(
-            enabled = false,
-            disableDisposition = CollectionDataDisposition.FLUSH_THEN_STOP,
-        )
-        assertEquals(CollectionDataDisposition.FLUSH_THEN_STOP, s.disableDisposition)
     }
 
     // ===== CollectionAcknowledgment (collection loop closure) =====
@@ -721,8 +520,8 @@ class CollectionModelsTest {
                     CollectionModuleId.SENSOR_ACCELEROMETER,
                     enabled = true,
                 ),
-                CollectionModuleId.AMBIENT_AUDIO to CollectionDefaults.moduleSetting(
-                    CollectionModuleId.AMBIENT_AUDIO,
+                CollectionModuleId.GAZE_TRACKING to CollectionDefaults.moduleSetting(
+                    CollectionModuleId.GAZE_TRACKING,
                     enabled = true,
                 ),
             ),
@@ -733,7 +532,7 @@ class CollectionModelsTest {
         assertTrue(enabled.contains(CollectionModuleId.DEVICE_LIFECYCLE))
         assertTrue(enabled.contains(CollectionModuleId.SENSOR_ACCELEROMETER))
         assertFalse(enabled.contains(CollectionModuleId.SENSOR_GYROSCOPE))
-        assertFalse(enabled.contains(CollectionModuleId.AMBIENT_AUDIO))
+        assertFalse("a reserved module is never enabled", enabled.contains(CollectionModuleId.GAZE_TRACKING))
     }
 
     @Test fun testAcknowledgmentEntryStampsServerTimeByDefault() {
@@ -741,7 +540,7 @@ class CollectionModelsTest {
         val entry = CollectionAcknowledgmentEntry(
             studyId = java.util.UUID.randomUUID(),
             participantId = "p1",
-            sourceDeviceId = "d1",
+            sourceRandomDeviceId = "d1",
             acknowledgedModules = setOf(CollectionModuleId.USAGE_EVENTS),
             acknowledgedAt = OffsetDateTime.parse("2020-01-01T00:00:00Z"),
         )

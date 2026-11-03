@@ -1,7 +1,6 @@
 package com.openlattice.chronicle.study
 
 import com.google.common.base.Preconditions
-import com.openlattice.chronicle.sensorkit.SensorSetting
 import jakarta.validation.Valid
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
@@ -41,8 +40,6 @@ public data class StudyUpdate(
     @field:Size(max = 255, message = "Contact exceeds maximum length")
     val contact: String? = null,
 
-    val notificationsEnabled: Boolean? = null,
-
     @field:Size(max = 36, message = "Storage name exceeds maximum length")
     @field:Pattern(regexp = "^[a-zA-Z]*$", message = "Storage name must contain only alphabetic characters")
     val storage: String? = null,
@@ -58,4 +55,3 @@ public data class StudyUpdate(
         )
     }
 }
-
