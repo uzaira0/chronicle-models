@@ -2,6 +2,7 @@ package com.openlattice.chronicle.participants
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.openlattice.chronicle.candidates.Candidate
+import com.openlattice.chronicle.collection.ParticipantConsentState
 import com.openlattice.chronicle.data.ParticipationStatus
 import com.openlattice.chronicle.util.JsonFields
 import jakarta.validation.Valid
@@ -28,4 +29,6 @@ public data class Participant(
     @param:JsonProperty("participantNotes") val participantNotes: String? = null,
     @param:JsonProperty("participantTags") val participantTags: Set<String> = emptySet(),
     val withdrawnAt: java.time.OffsetDateTime? = null,
+    /** Server-derived from the participant's decisions; null before any device enrolled. Ignored on registration. */
+    val consentState: ParticipantConsentState? = null,
 )

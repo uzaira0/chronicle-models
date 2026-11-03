@@ -51,6 +51,8 @@ public data class CollectionModuleSetting(
      * records, even if the module itself is enabled.
      */
     val healthConnectRecordTypes: Set<HealthConnectRecordType> = emptySet(),
+    /** Read-side server evidence: last revision that reset this module's consent. */
+    val consentEpoch: Int = AndroidDataCollectionSetting.INITIAL_SETTINGS_VERSION,
 ) {
     public companion object {
         /** Android's normal-rate sensor ceiling; prevents zero-period/max-speed collection. */

@@ -1,5 +1,6 @@
 package com.openlattice.chronicle.collection
 
+import com.openlattice.chronicle.generated.CollectionConsentContracts
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
@@ -131,6 +132,10 @@ public enum class CollectionModuleId(
     COMMUNICATION_LOG("communication_log", CollectionPrivacyClass.COMMUNICATION_METADATA, false),
 
     ;
+
+    /** Whether this module supports a participant's per-module consent decision. */
+    public val consentGated: Boolean
+        get() = this in CollectionConsentContracts.consentGatedModules
 
     public companion object {
         private val BY_ID: Map<String, CollectionModuleId> = entries.associateBy { it.id }

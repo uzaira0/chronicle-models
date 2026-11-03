@@ -42,6 +42,10 @@ public data class CollectionAcknowledgmentEntry(
     val disclosureVersion: String? = null,
     /** Lowercase SHA-256 digest of the authoritative enrollment manifest reviewed by the participant. */
     val manifestDigest: String? = null,
+    /** The phone's decision sequence number; the server assigns the next one for a client that sends none. */
+    val decisionSeq: Long? = null,
+    /** Current upload consent, computed by the server when researchers read the history. */
+    val currentConsentedModules: Set<CollectionModuleId> = emptySet(),
 ) {
     init {
         require(acknowledgedModules.intersect(declinedModules).isEmpty()) {

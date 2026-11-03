@@ -45,9 +45,11 @@ public data class AndroidDataCollectionSetting(
      * omitted active modules with [CollectionDefaults]. This is the shared server/client contract
      * for enrollment consent evidence; device-local legacy preferences are deliberately excluded.
      */
-    public fun effectiveModules(): Map<CollectionModuleId, CollectionModuleSetting> {
+    public fun effectiveModules(
+        moduleIds: Set<CollectionModuleId> = androidSupportedModuleIds,
+    ): Map<CollectionModuleId, CollectionModuleSetting> {
         val hasExplicitSensorScope = hasAnySensorModule()
-        return androidSupportedModuleIds.associateWith { moduleId ->
+        return moduleIds.associateWith { moduleId ->
             modules[moduleId] ?: if (
                 hasExplicitSensorScope && SensorCollectionModules.isSensorModule(moduleId)
             ) {
@@ -64,6 +66,11 @@ public data class AndroidDataCollectionSetting(
             .filterValues(CollectionModuleSetting::enabled)
             .keys
             .toCollection(LinkedHashSet())
+
+    /** Only modules with a supported per-module decision can require participant consent. */
+    public fun effectiveRequiredModuleIds(): Set<CollectionModuleId> =
+        effectiveModules().filter { (module, setting) -> module.consentGated && setting.enabled && setting.required }
+            .keys.toCollection(LinkedHashSet())
 
     public companion object {
         /** Active modules implemented by the Android client. */

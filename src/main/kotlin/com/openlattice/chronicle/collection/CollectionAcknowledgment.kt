@@ -51,6 +51,11 @@ public data class CollectionAcknowledgment(
     val disclosureVersion: String? = null,
     /** Lowercase SHA-256 digest of the authoritative enrollment manifest reviewed by the participant. */
     val manifestDigest: String? = null,
+    /**
+     * The phone's sequence number for this decision, assigned when it committed: every upload row carries the
+     * sequence in force when it was captured, and a retry of the same decision carries the same number.
+     */
+    val decisionSeq: Long? = null,
 ) {
     init {
         require(
@@ -73,6 +78,7 @@ public data class CollectionAcknowledgment(
             "Only per-sensor hardware modules may be reported unavailable"
         }
         require(appVersion == null || appVersion.length <= 64) { "appVersion is too long" }
+        require(decisionSeq == null || decisionSeq > 0) { "decisionSeq must be positive when supplied: $decisionSeq" }
         require(settingsVersion == null || settingsVersion > 0) {
             "settingsVersion must be positive when supplied: $settingsVersion"
         }
