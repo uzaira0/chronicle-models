@@ -9,6 +9,7 @@ import com.openlattice.chronicle.study.StudySetting
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public data class SurveySettings(
-    val appUsageThresholdInSeconds: Int = 3*60,
+    /** An app is listed for a survey day once its use that day reaches this many seconds. */
+    val appUsageThresholdInSeconds: Int = 60,
     val deviceUsageThresholdInSeconds: Int = 3*60,
 ) : StudySetting
