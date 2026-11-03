@@ -1,8 +1,8 @@
 package com.openlattice.chronicle.collection
 
 /**
- * What caused a participant's per-module consent decision to be reported to the server
- * (per-module consent design §3.3). Lets researchers tell an enrollment-time choice
+ * What caused a participant's per-module consent decision to be reported to the server.
+ * Lets researchers tell an enrollment-time choice
  * apart from a later self-service toggle, a study-setting-driven re-decision, or a
  * withdrawal.
  *
@@ -12,7 +12,7 @@ package com.openlattice.chronicle.collection
  *  - [SETTINGS_CHANGE] — the participant re-decided because a study-setting change made
  *    a module newly required (mandatory consent-or-leave).
  *  - [WITHDRAWAL] — the participant chose to leave the study rather than accept a
- *    now-required module (an audit/notification record only; see design §7.1).
+ *    now-required module (an audit/notification record only).
  *
  * @author uzaira0
  */

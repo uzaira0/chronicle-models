@@ -4,8 +4,8 @@ package com.openlattice.chronicle.study
  * Lifecycle status for studies.
  *
  * ACTIVE -> ARCHIVED -> ACTIVE (unarchive)
- * ACTIVE -> SCHEDULED_FOR_DELETION -> (deleted by scheduler)
- * ARCHIVED -> SCHEDULED_FOR_DELETION -> (deleted by scheduler)
+ * ACTIVE or ARCHIVED -> SCHEDULED_FOR_DELETION: deletion requested and the study's data blocked;
+ * erasure runs only when an owner starts it, and cancelling restores the earlier status.
  */
 public enum class StudyLifecycleStatus {
     ACTIVE,

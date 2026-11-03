@@ -9,12 +9,12 @@ This catalog names each shared concept, its canonical owner, required consumers,
 | Collection module IDs and state | `chronicle-models/src/main/kotlin/com/openlattice/chronicle/collection/CollectionModuleId.kt` | Android, iOS generated contracts, web generated domain constants, backend contract tests |
 | Privacy classes and defaults | `chronicle-models/src/main/kotlin/com/openlattice/chronicle/collection/CollectionPrivacyClass.kt`, `CollectionDefaults.kt`, module metadata in `CollectionModuleId.kt` | Android settings, iOS settings, web study configuration, backend/export policy tests |
 | Android sensor types and mapping | `chronicle-models/src/main/kotlin/com/openlattice/chronicle/android/AndroidSensorType.kt`, `chronicle-models/src/main/kotlin/com/openlattice/chronicle/collection/SensorCollectionModules.kt` | Android collection modules, web configuration UI, backend Android sensor ingestion tests |
-| iOS SensorKit sensor types | `chronicle-models/src/main/kotlin/com/openlattice/chronicle/sensorkit/SensorType.kt` | iOS generated contracts and native SensorKit adapter |
 | Study feature IDs | `chronicle-models/src/main/kotlin/com/openlattice/chronicle/study/StudyFeature.kt` | Web feature UI, backend study behavior, mobile study settings |
 | Participation/export/lifecycle/status enums | `chronicle-models/src/main/java/com/openlattice/chronicle/data/ParticipationStatus.java`, `StudyLifecycleStatus.kt`, `ParticipantDataType.kt` | Web operations state, backend study APIs, generated mobile API/domain types |
 | Consent triggers and data disposition | `ConsentTrigger.kt`, `CollectionDataDisposition.kt` | Web consent/admin UI, backend enforcement/export, mobile participation flows |
 | HTTP paths and request/response shapes | `chronicle-api/chronicle.yaml` | Web OpenAPI types, iOS generated route builders and API DTOs, backend controller compatibility tests |
-| Database tables/RLS/export behavior | `chronicle-server/src/main/resources/db/migration/` and backend services | Backend ingestion, export jobs, contract tests only |
+| iOS Screen Time captures | `chronicle-server/.../storage/ScreenTimeUsageCaptures.kt`, `ScreenTimeUsageUploadService.kt` | Bare iOS upload, export, survey usage; [column dictionary](../../../docs/PILOT-DATA.md#ios-screen-time) |
+| Database tables/RLS/export behavior | `chronicle-server/src/main/resources/db/migration/` and backend services | Backend ingestion, streamed exports, contract tests only |
 
 ## Collection Module IDs
 
@@ -22,9 +22,8 @@ This catalog names each shared concept, its canonical owner, required consumers,
 
 | State | Source rule | Consumer behavior |
 | --- | --- | --- |
-| Active | `isActive = true` in `CollectionModuleId.kt` and included by `activeModules`. | May appear in generated active lists, settings UI, backend ingestion matrices, and export eligibility checks. |
-| Reserved/inactive | Present with `isActive = false` and not marked retired. | May be decoded and documented but must not be enabled by defaults or UI unless a future ADR activates it. |
-| Retired | Listed in `retiredIds` in `CollectionModuleId.kt`. | Decode-only. Must never be reintroduced into defaults, web module selectors, or backend active-module coverage as active. |
+| Active | `active = true` in `CollectionModuleId.kt` and included by `activeModules`. | May appear in generated active lists, settings UI, backend ingestion matrices, and export eligibility checks. |
+| Reserved/inactive | Present with `active = false`. | May be decoded and documented but must not be enabled by defaults or UI unless a future ADR activates it. |
 
 Active module metadata must include:
 
@@ -58,22 +57,10 @@ Required exported fields:
 
 - Android sensor type ID.
 - Mapped collection module ID.
-- Active/retired sensor module state.
+- Active state of each mapped sensor module.
 - Display order contract for deterministic admin/configuration surfaces.
 
 Android runtime adapters remain native. Generated web/iOS values must not imply that non-Android platforms support Android sensor collection.
-
-## iOS SensorKit Sensor Types
-
-Canonical source: `chronicle-models/src/main/kotlin/com/openlattice/chronicle/sensorkit/SensorType.kt`.
-
-Required exported fields:
-
-- Stable SensorKit string value.
-- Mapped collection module when one exists.
-- Fixture family for upload payloads when applicable.
-
-iOS native adapter ownership remains in the iOS app. `chronicle-ios/chronicle/SensorReader/Sensor.swift` should eventually become a mapping layer from generated contract values to `SRSensor`, not a second source of truth.
 
 ## Study Feature IDs
 
@@ -136,9 +123,7 @@ Required catalog fields:
 Initial fixture families should cover:
 
 - Android sensor data.
-- iOS SensorKit data.
 - Screen Time usage.
-- User identification.
 - Device settings.
 - Battery telemetry.
 - Interaction events.
@@ -149,12 +134,11 @@ Initial fixture families should cover:
 - Health metrics.
 - Connectivity state.
 - App network usage.
-- Encrypted payloads.
 - iOS device enrollment.
 
 ## Backward Compatibility
 
-- Retired values stay decodable forever unless a separate data migration proves no persisted or queued payload can contain them.
+- Removed collectors and their payload values are absent.
 - Unknown values from API responses must not crash generated clients.
 - Generated consumers must expose active and all-known value lists separately.
-- Wire-breaking value changes require an ADR update, fixture update, server compatibility adapter, mobile rollout plan, and rollback path.
+- Coordinated wire changes update OpenAPI, generators, fixtures, and app/server deployment together.

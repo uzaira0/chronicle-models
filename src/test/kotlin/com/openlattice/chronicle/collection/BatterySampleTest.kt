@@ -7,8 +7,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 /**
- * Model unit tests for the [BatterySample] wire contract
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §5).
+ * Model unit tests for the [BatterySample] wire contract.
  */
 class BatterySampleTest {
 

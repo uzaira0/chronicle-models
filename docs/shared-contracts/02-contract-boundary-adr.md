@@ -1,8 +1,8 @@
 # ADR: Shared Contract Boundaries
 
-Status: Accepted and implemented
+> Superseded design record; it describes collectors that no longer exist. Current collection contracts are described in [03-domain-contract-catalog.md](03-domain-contract-catalog.md) and [06-web-backend-db-alignment.md](06-web-backend-db-alignment.md).
 
-Date: 2026-07-02
+Status: Accepted and implemented
 
 ## Context
 

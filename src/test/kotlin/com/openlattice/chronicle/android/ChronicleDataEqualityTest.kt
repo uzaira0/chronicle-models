@@ -7,8 +7,8 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 /**
- * Equality previously walked only the right-hand operand, so a non-empty instance reported
- * itself equal to an empty one and the reverse comparison indexed past the shorter list.
+ * Equality compares both operands in full: a non-empty instance never equals an empty one,
+ * and the reverse comparison never indexes past the shorter list.
  */
 class ChronicleDataEqualityTest {
 

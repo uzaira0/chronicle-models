@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.OffsetDateTime
 
 /**
- * One media-metadata sample produced by the `audio_content` collection module
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §4.2).
+ * One media-metadata sample produced by the `audio_content` collection module.
  *
  * This is the shared **wire contract** between the Android `:collection-audio` module and the
  * server for the content-bearing layer. It records *what* the participant is playing — the

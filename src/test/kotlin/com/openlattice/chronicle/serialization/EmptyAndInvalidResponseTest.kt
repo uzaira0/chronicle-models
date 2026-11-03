@@ -17,11 +17,9 @@ import java.io.IOException
 import java.lang.reflect.Type
 
 /**
- * A 204 No Content response has a null body. The call adapter previously dereferenced it
- * unconditionally, so every `Unit`-returning operation threw NullPointerException after the
- * server had already completed the action. The Jackson converter separately turned a missing
- * content type, an unsupported content type and a JSON decoding failure into a null success
- * value, which surfaced later as an unrelated NullPointerException.
+ * A 204 No Content response has a null body, which a `Unit`-returning operation must accept
+ * without throwing after the server completed the action. A missing content type, an
+ * unsupported content type and a JSON decoding failure are errors, never a null success value.
  */
 class EmptyAndInvalidResponseTest {
 

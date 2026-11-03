@@ -2,7 +2,7 @@
 
 This directory is the control plane and as-built record for the Chronicle shared-contract refactor. It defines what is shared, what stays platform-owned, how the apps and services stay in sync, and which proof gates must remain green.
 
-Status: implementation complete as of 2026-07-12. No wire value or database migration was changed by the refactor; generated consumers, fixture coverage, boundary modules, and drift gates were added around the existing contract.
+Status: implementation complete. No wire value or database migration was changed by the refactor; generated consumers, fixture coverage, boundary modules, and drift gates were added around the existing contract.
 
 ## Document Map
 
@@ -27,7 +27,7 @@ Read these documents in order:
 - Backend database schema remains backend-owned. It is validated against shared collection contracts but is not exported to clients as a shared schema.
 - Android, iOS, and web runtime behavior stays platform-owned.
 - Generated consumers must tolerate unknown values unless the contract explicitly says a value is impossible.
-- Retired IDs remain decode-only and must not be reactivated by generated code or UI defaults.
+- Only catalogued IDs belong in generated contracts; inactive reserved IDs never enter UI defaults.
 - No implementation tranche may start until its entry criteria, proof commands, review-fixes gate, and rollback path are documented in [08-rollout-sequence.md](08-rollout-sequence.md).
 
 ## Source Repositories

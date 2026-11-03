@@ -1,5 +1,7 @@
 # Risk Ledger
 
+> Superseded design record; it describes collectors that no longer exist. Current collection contracts are described in [03-domain-contract-catalog.md](03-domain-contract-catalog.md) and [06-web-backend-db-alignment.md](06-web-backend-db-alignment.md).
+
 Each risk has an owner, mitigation, proof, and stop condition. Stop conditions block the tranche until resolved.
 
 ## R1: Jackson `@class` Polymorphism Breakage

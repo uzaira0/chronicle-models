@@ -35,13 +35,13 @@ Web-owned presentation metadata:
 - UI defaults must consume generated default enablement and privacy metadata.
 - OpenAPI generated API types remain sourced from `chronicle-api/chronicle.yaml`.
 
-Status: complete. `chronicle-contracts.ts` supplies domain values, `chronicle-payload-contracts.generated.ts` supplies OpenAPI-derived iOS wire validators plus the canonical fixture corpus, `payload-contracts.test.ts` verifies registry-corpus parity and valid/invalid Zod behavior for the four explicitly supported iOS wire families, and `scripts/check-domain-contracts.ts` verifies both generated content hashes. Labels and descriptions remain web-owned with exhaustive active-module tests.
+Status: complete. `chronicle-contracts.ts` supplies domain values and `scripts/check-domain-contracts.ts` verifies its generated content hash. Labels and descriptions remain web-owned with exhaustive active-module tests.
 
 ## Backend
 
 ### Current evidence
 
-- `chronicle-server/src/main/kotlin/com/openlattice/chronicle/controllers/StudyV4Controller.kt` exposes module upload endpoints and delegates to `StudyController`, which also directly ingests Android sensor availability (UPSERT) and iOS user identification; questionnaire ingestion goes through `SurveyController`/`SurveysService`.
+- `chronicle-server/src/main/kotlin/com/openlattice/chronicle/controllers/StudyV4Controller.kt` exposes module upload endpoints and delegates to `StudyController`, which also directly ingests Android availability snapshots (UPSERT) and delegates iOS Screen Time to its dedicated upload owner; questionnaire ingestion goes through `SurveyController`/`SurveysService`.
 - `chronicle-server/src/main/kotlin/com/openlattice/chronicle/services/upload/*UploadService.kt` owns ingestion behavior for collection streams.
 - `chronicle-server/src/main/resources/db/migration/` owns Flyway migrations for collection tables and RLS policy setup.
 
@@ -52,11 +52,11 @@ Backend must maintain a matrix for every active `CollectionModuleId`:
 | Field | Required meaning |
 | --- | --- |
 | Module ID | Stable ID from `chronicle-models`. |
-| Active state | Active/reserved/retired state from `chronicle-models`. |
+| Active state | Active or reserved state from `chronicle-models`. |
 | Upload endpoint | HTTP endpoint from `chronicle-api/chronicle.yaml` when applicable. |
 | Upload handler | Backend service or controller method that ingests the module payload. |
 | Database table | Backend-owned table or explicit no-table reason. |
-| Idempotency key | Column or logical key used to prevent duplicate ingestion. Two contract-tested mechanisms exist: unique-constraint keys (`ON CONFLICT` targets) and logical dedup (`chronicle_usage_events` and `sensor_data` intentionally carry no unique index; the scheduled dedup merge in `PostgresEventTables` is the mechanism, and the coverage test fails if a unique index appears without a matrix update). |
+| Idempotency key | Constraint-backed idempotency or explicitly documented logical dedup, verified by the matrix’s DB tests. Usage events use the client event ID index plus a duplicate sweep; Screen Time uses a NULL-safe capture key. |
 | Study scope | Study UUID or equivalent scoping column. |
 | Participant scope | Participant/user/device scoping column. |
 | Timestamp column | Event time and ingestion time expectations. |
@@ -70,10 +70,10 @@ Shared-row conventions established by the implemented matrix: `in_app_activity_c
 
 - Every active module has an ingestion/storage/export/RLS row or an explicit documented exception.
 - Every upload handler accepts canonical fixtures and rejects malformed fixtures.
-- Retired module IDs do not become newly ingestible unless a compatibility adapter explicitly requires decode-only handling.
+- Only active modules have ingestion handlers; removed collector IDs are absent from generated contracts.
 - Backend contract tests compare active `CollectionModuleId` values against handler/table/export/RLS matrix coverage.
 - Implemented: `chronicle-server/src/test/kotlin/com/openlattice/chronicle/contract/CollectionModuleCoverageMatrixTest.kt` (static completeness, handler wiring, and export-lane checks; the companion DB test runs the full `db/migration` corpus on Testcontainers Postgres 16 and asserts tables, scoping/timestamp columns, idempotency constraints via `pg_constraint`, and RLS enable/force/policy via `pg_policies`).
-- Implemented: `PayloadFixtureIngestionTest.kt` drives canonical valid and malformed fixtures through production upload services, including Screen Time and user-identification conversion to `sensor_data`, and proves idempotent re-ingestion.
+- Implemented: `PayloadFixtureIngestionTest.kt` drives canonical valid and malformed fixtures through production upload services, including Screen Time captures stored in `ios_screen_time_usage` (one row per capture key), and proves idempotent re-ingestion.
 
 ## Database
 
@@ -94,7 +94,6 @@ Flyway migrations define backend-owned collection tables including:
 - `V42__add_app_network_usage.sql`
 - `V43__add_device_settings.sql`
 - `V45__add_device_settings_audio_brightness.sql`
-- `V29__encrypted_payloads.sql`
 - `V1__enable_row_level_security.sql` baseline RLS setup.
 
 ### DB ownership rules
@@ -119,5 +118,5 @@ Each module table must document:
 - Flyway migrations apply from empty database.
 - RLS policies exist for tables that expose participant/study-scoped data.
 - Idempotency behavior rejects duplicates or preserves deterministic upsert semantics.
-- Export queries include eligible active modules and exclude ineligible modules. Current reality: export is lane-granular over exactly five `ParticipantDataType` lanes (`chronicle_usage_events`, `preprocessed_usage_events`, `app_usage_survey`, `sensor_data`, `android_sensor_data`); `battery_telemetry`, the ten V31-V43 module tables, `questionnaire_submissions`, and `android_device_sensor_availability` are not yet export-eligible, and the coverage test derives eligibility from that lane map so adding a lane fails the test until the matrix is re-derived.
+- Export queries include every stored dataset in `DataDownloadService.COLLECTION_EXPORTS` plus usage events, Android data, app-usage surveys and upload diagnostics. `IOSScreenTime` exports the newest capture per app/domain window from `ios_screen_time_usage`; dedicated Android collection datasets and availability reports have their own export lanes. `CollectionModuleCoverageMatrixTest` derives eligibility from the complete lane map. See the [researcher data dictionary](../../../docs/PILOT-DATA.md#ios-screen-time) for Screen Time columns.
 - Migration rollback guidance exists for each tranche even if Flyway rollback is operational rather than automated.

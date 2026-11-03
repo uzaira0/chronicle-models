@@ -5,13 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
 
-/**
- * Pins the Time Use Diary settings contract, including the upstream-parity fields
- * `clockFormat` / `clockFormatLocked` (methodic-labs). The backward-compatibility
- * test is the important one: settings persisted before these fields existed must
- * still deserialize, defaulting to a 12-hour, unlocked clock — otherwise enabling
- * parity would break every study's stored TUD settings.
- */
+/** Current diary settings preserve explicit choices and default omitted optional clock fields. */
 class TimeUseDiarySettingsTest {
 
     private val mapper = TestMappers.json()
@@ -38,9 +32,8 @@ class TimeUseDiarySettingsTest {
         assertEquals(true, restored.clockFormatLocked)
     }
 
-    @Test fun legacyJsonWithoutClockFormatDefaultsTo12Unlocked() {
-        // A settings blob written before the parity fields existed.
-        val legacyJson = """
+    @Test fun jsonWithoutClockFormatDefaultsTo12Unlocked() {
+        val settingsJson = """
             {
               "@class": "com.openlattice.chronicle.timeusediary.TimeUseDiarySettings",
               "enableChangesForSherbrookeUniversity": true,
@@ -48,7 +41,7 @@ class TimeUseDiarySettingsTest {
               "language": "fr"
             }
         """.trimIndent()
-        val restored = mapper.readValue(legacyJson, TimeUseDiarySettings::class.java)
+        val restored = mapper.readValue(settingsJson, TimeUseDiarySettings::class.java)
         assertEquals(12, restored.clockFormat)
         assertFalse(restored.clockFormatLocked)
         assertEquals("fr", restored.language)

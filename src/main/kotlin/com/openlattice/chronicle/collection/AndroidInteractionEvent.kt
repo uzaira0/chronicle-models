@@ -37,8 +37,7 @@ public enum class InteractionPositionSource {
 }
 
 /**
- * One interaction-salience event produced by the `interaction_events` collection module
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §6).
+ * One interaction-salience event produced by the `interaction_events` collection module.
  *
  * This is the shared **wire contract** between the Android `:collection-interaction`
  * module and the server. Events are captured via an `AccessibilityService`. When the study
@@ -112,12 +111,12 @@ public data class AndroidInteractionEvent(
      */
     public val rawY: Int? = null,
     /**
-     * Width of the node's logical display coordinate space at event time. Populated when the
+     * Width of the node's display coordinate space in screen pixels at event time. Populated when the
      * study captures element position; `null` in the grid-only mode.
      */
     public val screenWidth: Int? = null,
     /**
-     * Height of the node's logical display coordinate space at event time. Populated when the
+     * Height of the node's display coordinate space in screen pixels at event time. Populated when the
      * study captures element position; `null` in the grid-only mode.
      */
     public val screenHeight: Int? = null,

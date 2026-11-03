@@ -1,5 +1,7 @@
 # Generation and Drift Control
 
+> Superseded design record; it describes collectors that no longer exist. Current collection contracts are described in [03-domain-contract-catalog.md](03-domain-contract-catalog.md) and [06-web-backend-db-alignment.md](06-web-backend-db-alignment.md).
+
 This document specifies the implemented generation flow and proof gates.
 
 ## Canonical Inputs
@@ -14,9 +16,8 @@ This document specifies the implemented generation flow and proof gates.
 
 | Output | Source | Destination | Consumer | Commit policy |
 | --- | --- | --- | --- | --- |
-| JVM contract export artifact | `chronicle-models` | `generated/domain-contracts/chronicle-domain-contracts.json` | Web/iOS generators, backend contract tests | Committed generated artifact; freshness checked by `scripts/generate-domain-contracts.py --check`. |
+| JVM contract export artifact | root generator | `generated/domain-contracts/chronicle-domain-contracts.json` (root) | Web/iOS generators, backend contract tests | Committed generated artifact; freshness checked by `root scripts/generate-chronicle-contracts.py --check`. |
 | TypeScript domain constants/types | JVM contract export | `chronicle-web/src/modern/generated/chronicle-contracts.ts` | Web study configuration and operations state | Committed; content hash and Methodic freshness checked. |
-| TypeScript payload validators/fixtures | OpenAPI plus fixture registry | `chronicle-web/src/modern/generated/chronicle-payload-contracts.generated.ts` | Cross-language parity/freshness tests for the four iOS wire families; not a web runtime boundary | Committed; content hash and Methodic freshness checked. |
 | Swift generated contract target | JVM contract export plus OpenAPI | `chronicle-ios/chronicle/Generated/` | iOS DTOs, enums, contract values, route builders | Committed; `generate-ios-contracts.py --check` enforced. |
 | OpenAPI generated TypeScript | `chronicle-api/chronicle.yaml` | Existing web generated API types | Web API client/types | Existing behavior remains; freshness check continues. |
 | iOS route builders | `chronicle-api/chronicle.yaml` | iOS generated source target | iOS API calls replacing `ApiUtils.swift` path duplication | Generated with compatibility wrappers during migration. |
@@ -27,14 +28,10 @@ Run these from the `chronicle-models` repo root:
 
 | Command | Behavior |
 | --- | --- |
-| `scripts/generate-domain-contracts.py` | Regenerates `generated/domain-contracts/chronicle-domain-contracts.json` from the Kotlin and Java model sources plus the payload fixture registry. Validates `fixtures/payloads/registry.json` (unique kebab-case family names, known module ids, schema versions, fixture files on disk) and embeds it as `contracts.fixtureRegistry`; a malformed registry fails generation. |
-| `scripts/generate-domain-contracts.py --check` | Fails when the committed generated contract artifact is stale. |
-| `scripts/verify-domain-contract-fixtures.py` | Fails when `fixtures/domain-contracts/domain-contract-fixture.json` is stale relative to the generated contract artifact. |
-| `scripts/verify-domain-contract-fixtures.py --update` | Rewrites the reviewed fixture projection after an intentional domain contract change. |
-| `scripts/check-domain-contracts.sh` | Runs the generated-contract freshness check and fixture projection parity check together. |
+| `root scripts/generate-chronicle-contracts.py` | Regenerates `generated/domain-contracts/chronicle-domain-contracts.json` from the LinkML ontology and the declared payload fixture registry. Embeds `fixtures/payloads/registry.json` as `contracts.fixtureRegistry`. JVM fixture tests validate family names, module ids, versions, and files using `FixtureRegistry`. |
+| `root scripts/generate-chronicle-contracts.py --check` | Fails when the committed generated contract artifact is stale. |
 | `../gradlew test --tests 'com.openlattice.chronicle.fixtures.PayloadFixtureTest'` | JVM payload fixture gates: registry validation, canonical fixture decode/encode/decode round-trip, `invalid-*` fixture rejection, and active-module coverage against the hardcoded module-to-family map. |
 | `chronicle-ios/scripts/generate-ios-contracts.py [--check]` | Generates Swift domain contracts and OpenAPI route builders into `chronicle/Generated/`, syncs canonical payload fixtures into `chronicleTests/Fixtures/`, and with `--check` fails on stale committed output. Run from the `chronicle-ios` repo root. |
-| `methodic/scripts/generate-chronicle-payload-contracts.py [--check]` | Generates OpenAPI-derived Zod wire validators and embeds every canonical payload fixture for TypeScript registry-corpus parity; duplicate fixture paths fail generation. Run from the Methodic root. |
 | `chronicle-web/bun run check:domain-contracts` | Verifies content hashes for both generated web contract modules. |
 
 ## Payload Fixture Registry
@@ -64,12 +61,11 @@ from privacy classes alone.
 
 | Command family | Required behavior |
 | --- | --- |
-| Generate domain contracts | Export `chronicle-models` domain contracts into a deterministic artifact. Implemented locally by `scripts/generate-domain-contracts.py`. |
-| Verify generated artifacts are fresh | `scripts/generate-chronicle-contracts.py --check`, `scripts/generate-chronicle-payload-contracts.py --check`, `chronicle-models/scripts/check-domain-contracts.sh`, and `chronicle-ios/scripts/generate-ios-contracts.py --check`. |
+| Generate domain contracts | Export `chronicle-models` domain contracts into a deterministic artifact. Implemented locally by `root scripts/generate-chronicle-contracts.py`. |
+| Verify generated artifacts are fresh | `scripts/generate-chronicle-contracts.py --check` and `chronicle-ios/scripts/generate-ios-contracts.py --check`. |
 | Verify OpenAPI is valid | `./gradlew :chronicle-api:validateOpenApiSpec`; web API types use `bun run check:api-types`. |
-| Verify JVM fixtures round-trip | Decode and encode canonical fixtures using JVM model code. Implemented locally by `PayloadFixtureTest` over `fixtures/payloads/` (round-trip, negative, and coverage gates) plus the projection parity check in `scripts/verify-domain-contract-fixtures.py`. |
+| Verify JVM fixtures round-trip | Decode and encode canonical fixtures using JVM model code. Implemented locally by `PayloadFixtureTest` over `fixtures/payloads/` (round-trip, negative, and coverage gates). |
 | Verify Swift fixtures round-trip | Decode and encode the same fixtures using generated Swift contracts and iOS date/UUID rules. Implemented by `chronicle-ios/chronicleTests/ContractFixtureTests.swift` (xcodebuild simulator suite). |
-| Verify TypeScript fixture parity and supported wire validation | `bun test src/modern/state/payload-contracts.test.ts` in `chronicle-web` verifies registry-corpus parity and Zod validation for the four explicitly supported iOS wire families. |
 | Verify backend ingestion contract | `./gradlew :chronicle-server:test --tests 'com.openlattice.chronicle.contract.PayloadFixtureIngestionTest'`. |
 | Verify DB contract matrix | `./gradlew :chronicle-server:test --tests 'com.openlattice.chronicle.contract.CollectionModuleCoverageMatrix*'`. |
 

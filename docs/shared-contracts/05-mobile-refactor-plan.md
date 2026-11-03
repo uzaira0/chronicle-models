@@ -43,25 +43,23 @@ Status: complete. `chronicle/collection-contracts` is the storage-free contract-
 - Existing queued uploads must continue decoding.
 - Room migrations must remain app-version compatible.
 - SQLCipher storage behavior must not change during contract-generation tranches.
-- Retired module IDs must stay readable but inactive.
+- Reserved module IDs stay inactive.
 - No Android collection module should switch upload path or payload value without OpenAPI and fixture proof.
 
 ## iOS
 
 ### Current evidence
 
-- `chronicle-ios/chronicle/Utilities/ApiUtils.swift` hard-codes base URL constants, route segments, and endpoint builders.
-- `chronicle-ios/chronicle/SensorReader/Sensor.swift` duplicates SensorKit enum values and maps them to `SRSensor`.
+- `chronicle-ios/chronicle/Utilities/ApiUtils.swift` adapts native calls to generated route builders and injected server configuration.
 - `chronicle-ios/chronicle/Models/IOSDevice.swift` defines an API payload with a Jackson-style `@class` property.
 - `chronicle-ios/chronicle/ScreenTime/ScreenTimeUsagePayload.swift` defines local Screen Time payload records, enums, envelopes, filtering, and date encoding.
 
 ### Target boundary
 
-iOS should replace hand-written DTOs, contract enums, module IDs, and API paths with generated Swift contract files.
+iOS uses generated Swift DTOs, contract enums, module IDs, and API paths. The bare app collects app and web-domain usage through `ScreenTimeDirectExport.swift`.
 
 iOS platform-owned code remains:
 
-- SensorKit adapters.
 - Screen Time framework integration.
 - CoreData or local persistence.
 - Apple permission flows.
@@ -72,13 +70,12 @@ iOS platform-owned code remains:
 
 1. Generate Swift domain constants from `chronicle-models` without replacing call sites.
 2. Generate Swift API DTOs and route builders from `chronicle-api/chronicle.yaml`.
-3. Add fixture tests for `IOSDevice`, SensorKit payloads, Screen Time payloads, UUIDs, and date encoding.
+3. Add fixture tests for `IOSDevice` enrollment metadata, Screen Time payloads, UUIDs, and date encoding.
 4. Move hard-coded base URL configuration out of static constants into environment/configuration injection while preserving current defaults.
 5. Replace `ApiUtils.swift` path construction with generated route builders behind compatibility wrappers.
-6. Replace local SensorKit contract enums with generated values while keeping the native `SRSensor` adapter hand-written.
-7. Replace hand-written upload payload DTOs only when fixture parity proves identical wire output.
+6. Replace hand-written upload payload DTOs only when fixture parity proves identical wire output.
 
-Status: complete. `chronicle-ios/scripts/generate-ios-contracts.py` generates `ChronicleDomainContracts.swift`, `ChronicleRoutes.swift`, and `ChronicleWireDTOs.swift`. Enrollment, SensorKit, Screen Time, and user-identification uploads encode generated wire DTOs; local Apple-framework and persistence records map to those DTOs at the API boundary. ApiUtils compatibility wrappers, native SensorKit adapters, injected server configuration, and existing queued payload storage remain platform-owned.
+Status: complete. `chronicle-ios/scripts/generate-ios-contracts.py` generates `ChronicleDomainContracts.swift`, `ChronicleRoutes.swift`, and `ChronicleWireDTOs.swift`. Enrollment and Screen Time uploads encode generated wire DTOs; local Apple-framework and persistence records map to those DTOs at the API boundary. The bare app (branch `bare`) collects Screen Time only. Application records may carry an app name without a bundle ID; web-domain records preserve an empty domain supplied by Apple. Category labels are valid on both kinds. ApiUtils compatibility wrappers, injected server configuration, and queued payload storage remain platform-owned.
 
 ### iOS compatibility guards
 
@@ -86,7 +83,6 @@ Status: complete. `chronicle-ios/scripts/generate-ios-contracts.py` generates `C
 - Do not change ISO timestamp precision or timezone behavior without fixture proof.
 - Do not change UUID string casing/format.
 - Keep compatibility wrappers for old route-building call sites until the migration is complete.
-- Existing app installs must continue uploading queued Screen Time and SensorKit payloads.
 
 ## Shared Mobile Proofs
 
@@ -96,4 +92,4 @@ Both mobile platforms must pass:
 - Fixture round-trip parity against JVM canonical fixtures.
 - OpenAPI path compatibility checks.
 - Backend ingestion fixture tests.
-- Rollback verification showing older app payloads still ingest successfully.
+- Coordinated app/server deployment verified against current upload fixtures.

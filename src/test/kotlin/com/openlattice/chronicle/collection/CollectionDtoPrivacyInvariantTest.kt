@@ -4,12 +4,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Automated PHI / content-free invariant for every uploadable collection DTO.
+ * Automated identifier-free / content-free invariant for every uploadable collection DTO.
  *
  * Chronicle's two hard data-collection guarantees are MIC-FREE and CONTENT-FREE: no
  * uploadable event may carry human-readable content (notification/message text, screen
  * text), free geolocation, or a raw hardware identifier (IMEI/MAC/Android-ID), and no
- * field may carry classic PHI (names, email, phone, address, DOB, MRN, …).
+ * field may carry personal identifiers (names, email, phone, address, DOB, MRN, …).
  *
  * This test reflects over the wire DTOs and fails the build if a field name suggests it
  * could hold any of the above. It exists so a future change that adds, say, a
@@ -40,7 +40,7 @@ class CollectionDtoPrivacyInvariantTest {
             "com.openlattice.chronicle.android.ChronicleUsageEvent",
         ).map { Class.forName(it) }
 
-        // Substrings that must never appear in a field name — classic PHI, precise
+        // Substrings that must never appear in a field name: personal identifiers, precise
         // geolocation, and raw hardware identifiers.
         val FORBIDDEN_SUBSTRINGS = listOf(
             "ssn", "socialsecurity", "firstname", "lastname", "fullname", "givenname",
@@ -84,7 +84,7 @@ class CollectionDtoPrivacyInvariantTest {
                 val n = norm(field.name)
 
                 FORBIDDEN_SUBSTRINGS.firstOrNull { n.contains(it) }?.let {
-                    violations += "$simple.${field.name} — matches forbidden PHI/identifier token '$it'"
+                    violations += "$simple.${field.name} — matches forbidden personal-identifier token '$it'"
                 }
                 // contentType / *Type enums are metadata, not content: only flag exact names + text/body/message suffixes.
                 if (n in FORBIDDEN_CONTENT_NAMES || FORBIDDEN_CONTENT_SUFFIXES.any { n.endsWith(it) }) {
@@ -94,7 +94,7 @@ class CollectionDtoPrivacyInvariantTest {
         }
 
         assertTrue(
-            "Collection DTO privacy invariant violated — these fields could carry PHI/content/location/raw-id. " +
+            "Collection DTO privacy invariant violated — these fields could carry personal data/content/location/raw-id. " +
                 "If a field is genuinely safe (or a deliberate, consent-gated exception), add it to the ALLOWLIST " +
                 "with justification:\n  " + violations.joinToString("\n  "),
             violations.isEmpty(),

@@ -7,9 +7,7 @@ import java.time.OffsetDateTime
 
 /**
  * A participant's on-device per-module consent decision snapshot — the request body the
- * Android app POSTs back when its consent picture changes (design
- * `docs/COLLECTION-LOOP-CLOSURE-DESIGN.md` §5.2, generalized by the
- * per-module consent redesign, 2026-06-10).
+ * Android app POSTs back when its consent picture changes.
  *
  * A snapshot records, for the modules in play at that moment, which the participant
  * **accepted** ([acknowledgedModules]), which they **declined** ([declinedModules]), and which

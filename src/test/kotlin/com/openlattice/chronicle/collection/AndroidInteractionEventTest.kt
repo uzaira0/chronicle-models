@@ -8,8 +8,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
 /**
- * Model unit tests for the [AndroidInteractionEvent] wire contract
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §6).
+ * Model unit tests for the [AndroidInteractionEvent] wire contract.
  */
 class AndroidInteractionEventTest {
 

@@ -6,8 +6,7 @@ import java.util.UUID
 /**
  * One append-only record in a study's participant collection-acknowledgment trail —
  * persisted server-side when a device POSTs a [CollectionAcknowledgment], and surfaced
- * to researchers alongside the immutable settings audit (design
- * `docs/COLLECTION-LOOP-CLOSURE-DESIGN.md` §5.3, §11).
+ * to researchers alongside the immutable settings audit.
  *
  * Two timestamps are kept deliberately distinct:
  * - [recordedAt] — the **server-stamped** authoritative receipt time; this is the
@@ -27,7 +26,7 @@ public data class CollectionAcknowledgmentEntry(
     val acknowledgedModules: Set<CollectionModuleId>,
     /** Device-reported acknowledgment time (advisory). */
     val acknowledgedAt: OffsetDateTime,
-    /** The modules the participant **declined** in this snapshot (per-module consent design §3.3). */
+    /** The modules the participant **declined** in this snapshot. */
     val declinedModules: Set<CollectionModuleId> = emptySet(),
     /** Study-enabled per-sensor modules physically unavailable on the reporting device. */
     val unavailableModules: Set<CollectionModuleId> = emptySet(),

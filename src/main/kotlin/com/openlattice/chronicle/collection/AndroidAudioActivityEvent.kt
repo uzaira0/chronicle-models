@@ -39,8 +39,7 @@ public enum class AudioOutputRoute { SPEAKER, EARPIECE, WIRED_HEADPHONES, BLUETO
 public enum class AudioRingerMode { SILENT, VIBRATE, NORMAL, UNKNOWN }
 
 /**
- * One content-free app-audio-activity sample produced by the `audio_activity` collection module
- * (see `docs/SENSING-EXPANSION-DESIGN.md` §4.1).
+ * One content-free app-audio-activity sample produced by the `audio_activity` collection module.
  *
  * Shared **wire contract** between the Android `:collection-audio` module and the server, and
  * **mic-free by construction**: every field is derived from the device's own playback/output state

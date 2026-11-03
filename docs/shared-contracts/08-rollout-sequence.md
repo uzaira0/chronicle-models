@@ -1,6 +1,8 @@
 # Rollout Sequence
 
-Status: all eight tranches complete as of 2026-07-12. Each tranche retains its entry criteria, exit criteria, proof commands, review-fixes gate, and rollback path as an operational regression checklist.
+> Superseded design record; it describes collectors that no longer exist. Current collection contracts are described in [03-domain-contract-catalog.md](03-domain-contract-catalog.md) and [06-web-backend-db-alignment.md](06-web-backend-db-alignment.md).
+
+Status: all eight tranches complete. Each tranche retains its entry criteria, exit criteria, proof commands, review-fixes gate, and rollback path as an operational regression checklist.
 
 ## Tranche 1: Inventory and Contract Freeze
 
@@ -44,8 +46,8 @@ Work:
 
 - Add deterministic export from `chronicle-models` for domain contracts.
 - Include module IDs, states, privacy/defaults, sensor mappings, policy enums, and fixture registry.
-- Current local artifact: `generated/domain-contracts/chronicle-domain-contracts.json`.
-- Current local generator: `scripts/generate-domain-contracts.py`.
+- Current artifact: root `generated/domain-contracts/chronicle-domain-contracts.json`.
+- Current local generator: `root scripts/generate-chronicle-contracts.py`.
 
 Exit criteria:
 
@@ -54,8 +56,8 @@ Exit criteria:
 
 Proof commands:
 
-- Generate domain contracts with `scripts/generate-domain-contracts.py`.
-- Verify generated artifact freshness with `scripts/generate-domain-contracts.py --check`.
+- Generate domain contracts with `root scripts/generate-chronicle-contracts.py`.
+- Verify generated artifact freshness with `root scripts/generate-chronicle-contracts.py --check`.
 - JVM unit tests for duplicate IDs, retired active defaults, and required metadata.
 
 Review-fixes gate:
@@ -77,11 +79,9 @@ Work:
 
 - Add canonical payload fixtures for JVM, Swift, TypeScript, and backend ingestion.
 - Cover Screen Time, SensorKit, Android sensors, device settings, and representative collection tables.
-- Current local fixture registry: `fixtures/payloads/registry.json` (17 families), validated and embedded as `contracts.fixtureRegistry` by `scripts/generate-domain-contracts.py`.
+- Current local fixture registry: `fixtures/payloads/registry.json` (17 families), validated and embedded as `contracts.fixtureRegistry` by `root scripts/generate-chronicle-contracts.py`.
 - Current local canonical fixtures: `fixtures/payloads/<family>/valid.json` plus `invalid-<reason>.json` variants, synthetic deterministic data only.
 - Current local JVM gates: `src/test/kotlin/com/openlattice/chronicle/fixtures/PayloadFixtureTest.kt` with registry validation factored into `FixtureRegistry.parse`.
-- Current local fixture projection: `fixtures/domain-contracts/domain-contract-fixture.json`.
-- Current local fixture projection gate: `scripts/verify-domain-contract-fixtures.py`.
 
 Exit criteria:
 
@@ -90,7 +90,6 @@ Exit criteria:
 
 Proof commands:
 
-- Verify local fixture projection parity with `scripts/verify-domain-contract-fixtures.py`.
 - Verify JVM fixtures round-trip with `../gradlew test --tests 'com.openlattice.chronicle.fixtures.PayloadFixtureTest'`.
 - Verify malformed fixtures fail (same test class, `invalid-*` fixtures and inline malformed registry entries).
 
@@ -115,7 +114,7 @@ Work:
 - Replace safe duplicates from `study-constants.ts`, `study-operations-api.ts`, and `zod-schemas.ts`.
 - Keep UI labels/descriptions web-owned with exhaustive coverage checks.
 
-Current implementation: `chronicle-web/src/modern/generated/chronicle-contracts.ts`, `chronicle-payload-contracts.generated.ts`, generated OpenAPI types, `scripts/check-domain-contracts.ts`, and `state/payload-contracts.test.ts`.
+Current implementation: `chronicle-web/src/modern/generated/chronicle-contracts.ts`, generated OpenAPI types and `scripts/check-domain-contracts.ts`.
 
 Exit criteria:
 
