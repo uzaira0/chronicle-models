@@ -56,6 +56,18 @@ if (!localChronicleGradle.exists()) {
 }
 apply from: localChronicleGradle
 
+// jackson-module-kotlin brings kotlin-reflect 2.1.21, which NVD's CPE for CVE-2026-53914 matches (Kotlin < 2.4.20).
+// Align it with the compiler. A force is scoped to this project's own configurations and is not published,
+// so consumers (the Android app substitutes chronicle-models from source) keep their own resolution.
+def kotlinReflectAlignmentForces = [
+        "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}",
+]
+configurations.configureEach {
+    resolutionStrategy {
+        kotlinReflectAlignmentForces.each { force it }
+    }
+}
+
 kotlin {
     explicitApi()
 }
